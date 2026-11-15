@@ -1,0 +1,237 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .file {
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    align-items:      stretch;
+    display:          flex;
+    justify-content:  flex-start;
+    position:         relative;
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        .file-cta {
+          @include t.theme("background-color", "fill-#{$name}");
+          @include t.theme("border-color", "fill-#{$name}");
+          @include t.theme("color", "fill-text-#{$name}");
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .file-label:hover .file-cta {
+            @include t.theme("background-color", "fill-#{$name}-hover");
+            @include t.theme("border-color", "fill-#{$name}-hover");
+          }
+        }
+
+        .file-label:active .file-cta {
+          @include t.theme("background-color", "fill-#{$name}-active");
+          @include t.theme("border-color", "fill-#{$name}-active");
+          opacity: 0.85;
+        }
+
+        .file-name {
+          @include t.theme("border-color", "ink-#{$name}");
+          @include t.theme("color", "ink-#{$name}");
+        }
+      }
+    }
+
+    &.is-small {
+      font-size: c.$font-size-sm;
+    }
+
+    &.is-medium {
+      font-size: c.$font-size-lg;
+    }
+
+    &.is-large {
+      font-size: c.$font-size-xl;
+    }
+
+    &.has-name {
+      .file-cta {
+        border-end-end-radius:    0;
+        border-start-end-radius:  0;
+      }
+
+      .file-name {
+        border-end-start-radius:    0;
+        border-start-start-radius:  0;
+      }
+
+      &.is-empty {
+        .file-cta {
+          border-radius: c.$radius;
+        }
+
+        .file-name {
+          display: none;
+        }
+      }
+    }
+
+    &.is-boxed {
+      .file-label {
+        flex-direction: column;
+      }
+
+      .file-cta {
+        flex-direction:  column;
+        height:          auto;
+        padding:         1em 3em;
+      }
+
+      .file-name {
+        border-width: 0 c.$input-border-width c.$input-border-width;
+      }
+
+      .file-icon {
+        height:  1.5em;
+        width:   1.5em;
+      }
+
+      &.has-name {
+        .file-cta {
+          border-end-end-radius:      0;
+          border-end-start-radius:    0;
+          border-start-end-radius:    c.$radius;
+          border-start-start-radius:  c.$radius;
+        }
+
+        .file-name {
+          border-end-end-radius:      c.$radius;
+          border-end-start-radius:    c.$radius;
+          border-start-end-radius:    0;
+          border-start-start-radius:  0;
+          border-width:               0 c.$input-border-width c.$input-border-width;
+        }
+      }
+    }
+
+    &.is-centered {
+      justify-content: center;
+    }
+
+    &.is-fullwidth {
+      .file-label {
+        width: 100%;
+      }
+
+      .file-name {
+        flex-grow:  1;
+        max-width:  none;
+      }
+    }
+
+    // `justify-content: flex-end` already mirrors in RTL – the radii and the
+    // dropped border have to follow it, so they are flow-relative too.
+    &.is-right {
+      justify-content: flex-end;
+
+      .file-cta {
+        border-radius:            0;
+        border-start-end-radius:  c.$radius;
+        border-end-end-radius:    c.$radius;
+      }
+
+      .file-name {
+        border-radius: 0;
+        border-start-start-radius: c.$radius;
+        border-end-start-radius: c.$radius;
+        border-width: c.$input-border-width;
+        border-inline-end-width: 0;
+        order: -1;
+      }
+    }
+  }
+
+  .file-label {
+    align-items:      stretch;
+    display:          flex;
+    cursor:           pointer;
+    justify-content:  flex-start;
+    overflow:         hidden;
+    position:         relative;
+  }
+
+  .file-input {
+    height:              100%;
+    inset-inline-start:  0;
+    opacity:             0;
+    outline:             none;
+    position:            absolute;
+    top:                 0;
+    width:               100%;
+    cursor:              pointer;
+  }
+
+  .file-cta,
+  .file-name {
+    @include t.theme("border-color", "control-border");
+    border-radius:  c.$radius;
+    border-style:   solid;
+    border-width:   c.$input-border-width;
+    font-size:      1em;
+    height:         c.$input-height;
+    padding:        c.$input-padding-y c.$input-padding-x;
+    white-space:    nowrap;
+    align-items:    center;
+    display:        inline-flex;
+    transition:     background-color c.$duration c.$easing,
+      border-color c.$duration c.$easing,
+      color c.$duration c.$easing,
+      opacity c.$duration c.$easing;
+  }
+
+  .file-cta {
+    @include t.theme("background-color", "control-bg");
+    @include t.theme("border-color", "control-border");
+    @include t.theme("color", "control-text");
+    cursor: pointer;
+
+    @media (hover: hover) and (pointer: fine) {
+      .file-label:hover & {
+        @include t.theme("background-color", "control-hover");
+      }
+    }
+
+    .file-label:active & {
+      @include t.theme("background-color", "control-hover");
+      opacity: 0.85;
+    }
+  }
+
+  // The real input is transparent and outline-suppressed, so keyboard focus has to
+  // surface on the visible call-to-action instead.
+  .file-label:has(.file-input:focus-visible) .file-cta {
+    outline:         2px solid;
+    outline-offset:  2px;
+    @include t.theme("outline-color", "focus-ring");
+  }
+
+  .file-name {
+    @include t.theme("border-color", "border");
+    @include t.theme("color", "text-muted");
+    // The CTA sits on the leading side, so the shared edge is dropped there.
+    border-width:               c.$input-border-width;
+    border-inline-start-width:  0;
+    display:                    block;
+    max-width:                  c.$file-name-max-width;
+    overflow:                   hidden;
+    text-align:                 inherit;
+    text-overflow:              ellipsis;
+  }
+
+  .file-icon {
+    align-items:        center;
+    display:            flex;
+    height:             1em;
+    justify-content:    center;
+    margin-inline-end:  0.5em;
+    width:              1em;
+  }
+}

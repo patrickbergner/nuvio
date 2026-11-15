@@ -1,0 +1,70 @@
+@use "sass:map";
+@use "../config" as c;
+@use "../config/layers" as l;
+
+$spacing-types: (
+  "margin":   "m",
+  "padding":  "p",
+  ) !default;
+
+$spacing-directions: (
+  "top":     "t",
+  "right":   "r",
+  "bottom":  "b",
+  "left":    "l",
+  ) !default;
+
+// Flow-relative counterparts to the physical "l" / "r" suffixes above: these two
+// mirror under `dir="rtl"`, the physical ones deliberately do not.
+$spacing-logical-directions: (
+  "inline-start":  "s",
+  "inline-end":    "e",
+  ) !default;
+
+$spacing-horizontal:  "x"  !default;
+$spacing-vertical:    "y"  !default;
+
+$default-spacing-gaps: (
+  "auto": auto,
+) !default;
+
+@include l.layer("utilities") {
+  @each $property, $shortcut in $spacing-types {
+    // `padding: auto` is not valid CSS – keep the keyword out of the padding set.
+    $gaps: map.merge($default-spacing-gaps, c.$spacing-gaps);
+    @if $property == "padding" {
+      $gaps: map.remove($gaps, "auto");
+    }
+
+    @each $name, $value in $gaps {
+
+      .#{$shortcut}-#{$name} {
+        #{$property}: $value !important;
+      }
+
+      @each $direction, $suffix in $spacing-directions {
+        .#{$shortcut}#{$suffix}-#{$name} {
+          #{$property}-#{$direction}: $value !important;
+        }
+      }
+
+      @if c.$spacing-logical {
+        @each $direction, $suffix in $spacing-logical-directions {
+          .#{$shortcut}#{$suffix}-#{$name} {
+            #{$property}-#{$direction}: $value !important;
+          }
+        }
+      }
+
+      .#{$shortcut}#{$spacing-horizontal}-#{$name} {
+        #{$property}-left: $value !important;
+        #{$property}-right: $value !important;
+      }
+
+      .#{$shortcut}#{$spacing-vertical}-#{$name} {
+        #{$property}-top: $value !important;
+        #{$property}-bottom: $value !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+// ── Helper ───────────────────────────────────────────────────────────────────
+@mixin _segmented-fullwidth {
+  display:  flex;
+  width:    100%;
+
+  > label {
+    flex:             1 1 auto;
+    justify-content:  center;
+  }
+}
+
+@include l.layer("components") {
+  .segmented {
+    display:        inline-flex;
+    border-radius:  c.$radius;
+    border-style:   solid;
+    border-width:   c.$input-border-width;
+    padding:        c.$toggle-thumb-gap;
+
+    @include t.theme("background-color", "control-bg");
+    @include t.theme("border-color",     "control-border");
+
+    > label {
+      cursor:         pointer;
+      display:        inline-flex;
+      align-items:    center;
+      border-radius:  c.$radius-sm;
+      // Separates an optional leading/trailing icon from the label text; the radio
+      // is absolutely positioned, so it is not a flex item and adds no gap.
+      gap:            0.4em;
+      padding-block:   calc(0.25em - #{c.$control-label-y-compensation}) calc(0.25em + #{c.$control-label-y-compensation});
+      padding-inline:  0.875em;
+      font-size:      c.$font-size-base;
+      font-weight:    c.$font-weight-medium;
+      line-height:    c.$line-height-base;
+      white-space:    nowrap;
+      @include t.theme("color", "text-muted");
+      transition: background-color c.$duration c.$easing,
+                  color             c.$duration c.$easing;
+
+      // ── Hidden Radio Input – In DOM for A11y, Zero-Sized ───────────────────
+      input[type="radio"] {
+        appearance:  none;
+        position:    absolute;
+        width:       0;
+        height:      0;
+        margin:      0;
+        opacity:     0;
+      }
+
+      // ── Thumb: The Checked Segment Fills with the Active Color ─────────────
+      &:has(input:checked) {
+        @include t.theme("background-color", "fill-link");
+        @include t.theme("color",            "fill-text-link");
+      }
+
+      // ── Hover (Unchecked) ──────────────────────────────────────────────────
+      @media (hover: hover) and (pointer: fine) {
+        &:not(:has(input:checked)):hover {
+          @include t.theme("background-color", "control-hover");
+          @include t.theme("color",            "text-highlight");
+        }
+      }
+
+      // ── Hover (Checked) ────────────────────────────────────────────────────
+      @media (hover: hover) and (pointer: fine) {
+        &:has(input:checked):hover {
+          @include t.theme("background-color", "fill-link-hover");
+        }
+      }
+
+      // ── Focus ──────────────────────────────────────────────────────────────
+      &:has(input:focus-visible) {
+        outline:         2px solid;
+        outline-offset:  2px;
+        @include t.theme("outline-color", "focus-ring");
+      }
+    }
+
+    // ── Size Modifiers ───────────────────────────────────────────────────────
+    &.is-small  > label { font-size: c.$font-size-sm; }
+    &.is-medium > label { font-size: c.$font-size-lg; }
+    &.is-large  > label { font-size: c.$font-size-xl; }
+
+    // ── Fullwidth Modifier ───────────────────────────────────────────────────
+    &.is-fullwidth { @include _segmented-fullwidth; }
+
+    // ── Pill Modifier ────────────────────────────────────────────────────────
+    &.is-pill {
+      border-radius: c.$radius-pill;
+      > label { border-radius: c.$radius-pill; }
+    }
+
+    // ── Semantic Variants ────────────────────────────────────────────────────
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} > label {
+        &:has(input:checked) {
+          @include t.theme("background-color", "fill-#{$name}");
+          @include t.theme("color",            "fill-text-#{$name}");
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          &:has(input:checked):hover {
+            @include t.theme("background-color", "fill-#{$name}-hover");
+          }
+        }
+      }
+    }
+
+    // ── Disabled ─────────────────────────────────────────────────────────────
+    &[disabled],
+    fieldset[disabled] & {
+      opacity: 0.7;
+      > label {
+        cursor:          not-allowed;
+        pointer-events:  none;
+      }
+    }
+  }
+
+  // ── Fullwidth (Mobile-Only) ────────────────────────────────────────────────
+  @include u.bp-below("sm") {
+    .segmented.is-fullwidth-mobile { @include _segmented-fullwidth; }
+  }
+}

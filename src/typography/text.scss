@@ -1,0 +1,71 @@
+@use "sass:list";
+@use "../config" as c;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+$_font-sizes: (
+  c.$font-size-xs,
+  c.$font-size-sm,
+  c.$font-size-base,
+  c.$font-size-lg,
+  c.$font-size-xl,
+  c.$font-size-2xl,
+  c.$font-size-3xl,
+  c.$font-size-4xl,
+  c.$font-size-5xl,
+);
+
+@mixin _size($suffix: "") {
+  @each $size in $_font-sizes {
+    $i: list.index($_font-sizes, $size);
+    .is-size-#{$i}#{$suffix} { font-size: $size !important; }
+  }
+}
+
+@include l.layer("utilities") {
+  @include _size;
+  @include u.bp-below("sm") { @include _size("-mobile"); }
+
+  // "left" / "right" stay physical; "start" / "end" mirror under `dir="rtl"`.
+  $_alignments: (
+    "centered":   "center",
+    "justified":  "justify",
+    "left":       "left",
+    "right":      "right",
+    "start":      "start",
+    "end":        "end",
+  );
+
+  // All base alignments before the -mobile ones, so a -mobile one always wins.
+  @each $a, $v in $_alignments {
+    .is-aligned-#{$a} { text-align: #{$v} !important; }
+  }
+  @include u.bp-below("sm") {
+    @each $a, $v in $_alignments {
+      .is-aligned-#{$a}-mobile { text-align: #{$v} !important; }
+    }
+  }
+
+  .is-capitalized   { text-transform: capitalize !important; }
+  .is-lower         { text-transform: lowercase  !important; }
+  .is-upper         { text-transform: uppercase  !important; }
+  .is-italic        { font-style: italic         !important; }
+  .is-underlined    { text-decoration: underline !important; }
+  .is-not-decorated { text-decoration: none      !important; }
+
+  .has-weight-light     { font-weight: c.$font-weight-light     !important; }
+  .has-weight-normal    { font-weight: c.$font-weight-normal    !important; }
+  .has-weight-medium    { font-weight: c.$font-weight-medium    !important; }
+  .has-weight-semibold  { font-weight: c.$font-weight-semibold  !important; }
+  .has-weight-bold      { font-weight: c.$font-weight-bold      !important; }
+  .has-weight-extrabold { font-weight: c.$font-weight-extrabold !important; }
+
+  .is-family-sans  { font-family: c.$font-family-sans  !important; }
+  .is-family-serif { font-family: c.$font-family-serif !important; }
+  .is-family-mono  { font-family: c.$font-family-mono  !important; }
+
+  .has-no-linebreak { white-space: nowrap; }
+
+  // Equal-width digits, so a live value does not jitter as it changes.
+  .has-tabular-nums { font-variant-numeric: tabular-nums !important; }
+}

@@ -1,0 +1,55 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+// Hoisted above the layer wrapper – Sass forbids a mixin declaration inside
+// another mixin's content block.
+@mixin pulsation {
+  animation-duration:         2s;
+  animation-iteration-count:  infinite;
+  animation-name:             pulsate;
+  animation-timing-function:  cubic-bezier(0.4, 0, 0.6, 1);
+  @include t.theme("background-color", "border");
+  border-radius:   c.$radius-sm;
+  box-shadow:      none;
+  pointer-events:  none;
+
+  // A skeleton reads as "loading" from its shape alone – drop the pulse.
+  @media (prefers-reduced-motion: reduce) {
+    animation-name: none;
+  }
+}
+
+@include l.layer("components") {
+  @keyframes pulsate {
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .placeholder-block {
+    @include pulsation;
+    @include u.block;
+    color:       transparent !important;
+    min-height:  c.$placeholder-block-min-height;
+  }
+
+  .placeholder-lines {
+    color:           transparent !important;
+    display:         flex;
+    flex-direction:  column;
+    gap:             c.$placeholder-lines-gap;
+    position:        relative;
+
+    > div {
+      @include pulsation;
+      height: c.$placeholder-line-height;
+
+      &:last-child {
+        min-width:  4em;
+        width:      30%;
+      }
+    }
+  }
+}

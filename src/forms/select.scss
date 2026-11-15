@@ -1,0 +1,100 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "form-utilities";
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .select {
+    display:         inline-block;
+    max-width:       100%;
+    position:        relative;
+    vertical-align:  top;
+
+    &:not(.is-multiple) { height: c.$input-height; }
+
+    &:not(.is-multiple):not(.is-loading)::after {
+      @include u.arrow;
+      @include t.theme("border-color", "text-highlight");
+      inset-inline-end:  1.125em;
+      z-index:           4;
+    }
+
+    &.is-pill select {
+      border-radius:         c.$radius-pill;
+      padding-inline-start:  1em;
+    }
+
+    select {
+      @include form-utilities.control;
+      cursor:     pointer;
+      display:    block;
+      font-size:  1em;
+      max-width:  100%;
+      outline:    none;
+
+      &::-ms-expand { display: none; }
+      &:not([multiple]) { padding-inline-end: 2.5em; }
+      &[multiple] {
+        height:   auto;
+        padding:  0;
+        option {
+          padding: 0.5em 1em;
+          &:checked {
+            @include t.theme("background-color", "fill-link");
+            @include t.theme("color",            "fill-text-link");
+          }
+        }
+      }
+    }
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        &:not(.is-multiple):not(.is-loading)::after {
+          @include t.theme("border-color", "tint-text-#{$name}");
+        }
+
+        select {
+          @include t.theme("background-color", "tint-#{$name}");
+          @include t.theme("border-color",     "fill-#{$name}");
+          @include t.theme("color",            "tint-text-#{$name}");
+
+          @include u.on-hover {
+            @include t.theme("border-color", "fill-#{$name}-hover");
+          }
+          &.is-hover {
+            @include t.theme("border-color", "fill-#{$name}-hover");
+          }
+          &:active, &.is-active {
+            @include t.theme("border-color", "fill-#{$name}-active");
+          }
+          &:focus, &.is-focused {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-#{$name}) #{c.$focus-ring-opacity}, transparent);
+          }
+        }
+      }
+    }
+
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+
+    &.is-disabled::after { opacity: 0.5; }
+
+    &.is-fullwidth { width: 100%; select { width: 100%; } }
+
+    &.is-loading {
+      &::after {
+        @include u.loader;
+        @include t.theme("border-color", "control-text");
+        border-right-color:  transparent;
+        border-top-color:    transparent;
+        inset-inline-end:    0.625em;
+        margin-top:          0;
+        position:            absolute;
+        top:                 calc(50% - 0.5em);
+        transform:           none;
+      }
+    }
+  }
+}

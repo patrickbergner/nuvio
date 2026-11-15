@@ -1,0 +1,34 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+$_radii: (
+  "none":     0,
+  "small":    c.$radius-sm,
+  "normal":   c.$radius,
+  "large":    c.$radius-lg,
+  "rounded":  c.$radius-pill,
+);
+
+@include l.layer("utilities") {
+  @each $name, $value in $_radii {
+    .has-radius-#{$name} {
+      border-radius: $value !important;
+    }
+  }
+
+  $_borders: (
+    "none":    0,
+    "small":   c.$border-sm,
+    "normal":  c.$border,
+    "large":   c.$border-lg,
+  );
+
+  @each $name, $value in $_borders {
+    .has-border-#{$name} {
+      @include t.theme("border-color", "border");
+      border-style:  solid !important;
+      border-width:  $value !important;
+    }
+  }
+}

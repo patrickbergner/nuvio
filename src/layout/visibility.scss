@@ -1,0 +1,50 @@
+@use "../config" as c;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+$displays: block flex inline inline-block inline-flex grid;
+
+@include l.layer("utilities") {
+  @each $display in $displays {
+    .is-#{$display} {
+      display: $display !important;
+    }
+  }
+
+  .is-hidden {
+    display: none !important;
+  }
+
+  .is-invisible {
+    visibility: hidden !important;
+  }
+
+  @each $bp, $_ in c.$breakpoints {
+    @include u.bp-from($bp) {
+      @each $display in $displays {
+        .is-#{$display}-#{$bp} {
+          display: $display !important;
+        }
+      }
+
+      .is-hidden-#{$bp} {
+        display: none !important;
+      }
+
+      .is-invisible-#{$bp} {
+        visibility: hidden !important;
+      }
+    }
+  }
+
+  .sr-only {
+    border:       none !important;
+    clip-path:    inset(50%) !important;
+    height:       0.01em !important;
+    overflow:     hidden !important;
+    padding:      0 !important;
+    position:     absolute !important;
+    white-space:  nowrap !important;
+    width:        0.01em !important;
+  }
+}

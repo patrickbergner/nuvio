@@ -1,0 +1,36 @@
+@use "../config" as c;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .image {
+    display:   block;
+    position:  relative;
+
+    img {
+      display:  block;
+      height:   auto;
+      width:    100%;
+
+      &.is-circle {
+        border-radius: c.$radius-pill;
+      }
+    }
+
+    &.is-fullwidth {
+      width: 100%;
+    }
+
+    &.is-square {
+      aspect-ratio:  1;
+      overflow:      hidden;
+
+      img {
+        position:    absolute;
+        inset:       0;
+        height:      100%;
+        width:       100%;
+        object-fit:  cover;
+      }
+    }
+  }
+}

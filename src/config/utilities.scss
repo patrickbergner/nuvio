@@ -1,0 +1,106 @@
+@use "sass:map";
+@use "." as c;
+
+// ── Breakpoints ──────────────────────────────────────────────────────────────
+
+@mixin bp-from($key) {
+  $entry: map.get(c.$breakpoints, $key);
+  @media screen and (min-width: map.get($entry, "min")) {
+    @content;
+  }
+}
+
+@mixin bp-below($key) {
+  $entry: map.get(c.$breakpoints, $key);
+  @media screen and (max-width: #{map.get($entry, "min") - 1px}) {
+    @content;
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+// Hover styles gated to devices with a hover-capable, precise pointer.
+// Prevents "sticky hover" lingering on touch devices after a tap.
+@mixin on-hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin placeholder {
+  &::placeholder               { @content; }
+  &::-webkit-input-placeholder { @content; }
+  &:-moz-placeholder           { @content; }
+  &::-moz-placeholder          { @content; }
+  &:-ms-input-placeholder      { @content; }
+}
+
+// Block spacing helper – applies bottom margin to all but last child
+@mixin block($spacing: c.$block-spacing) {
+  &:not(:last-child) {
+    margin-bottom: $spacing;
+  }
+}
+
+// Downward arrow, used in dropdowns and selects. The dropped borders stay
+// physical on purpose – this is a glyph, and mirroring them under `dir="rtl"`
+// would rotate the chevron instead of flipping it.
+@mixin arrow($color: currentColor) {
+  border:            0.125em solid $color;
+  border-right:      0;
+  border-top:        0;
+  content:           " ";
+  display:           block;
+  height:            0.625em;
+  margin-top:        -0.4375em;
+  pointer-events:    none;
+  position:          absolute;
+  top:               50%;
+  transform:         rotate(-45deg);
+  transform-origin:  center;
+  transition:        border-color c.$duration c.$easing;
+  width:             0.625em;
+}
+
+// X glyph drawn from two crossed bars, the same technique the navbar burger
+// uses for its open state. Lets a close control ship with no icon font.
+@mixin close-x($color: currentColor, $thickness: 0.125em, $length: 0.65em) {
+  position: relative;
+
+  &::before,
+  &::after {
+    background-color:  $color;
+    content:           "";
+    height:            $thickness;
+    left:              50%;
+    position:          absolute;
+    top:               50%;
+    transition:        background-color c.$duration c.$easing;
+    width:             $length;
+  }
+
+  &::before { transform: translate(-50%, -50%) rotate(45deg); }
+  &::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+}
+
+// Spinning loader ring
+@mixin loader {
+  animation:           spinAround 800ms infinite linear;
+  border:              2px solid;
+  border-radius:       c.$radius-pill;
+  border-right-color:  transparent;
+  border-top-color:    transparent;
+  content:             "";
+  display:             block;
+  height:              1em;
+  position:            relative;
+  width:               1em;
+
+  // Slow down rather than stop – the ring is the only "busy" cue a loading
+  // control has left once its label is hidden.
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 2.4s;
+  }
+}

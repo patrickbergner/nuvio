@@ -1,0 +1,106 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .toggle {
+    cursor:       pointer;
+    display:      inline-flex;
+    align-items:  center;
+    gap:          c.$checkbox-gap;
+    line-height:  c.$line-height-base;
+
+    input[type="checkbox"] {
+      appearance:   none;
+      box-sizing:   border-box;
+      cursor:       pointer;
+      flex-shrink:  0;
+      position:     relative;
+
+      width:          c.$toggle-width;
+      height:         c.$toggle-height;
+      border-radius:  c.$radius-pill;
+      border-style:   solid;
+      border-width:   c.$input-border-width;
+
+      @include t.theme("background-color", "control-bg");
+      @include t.theme("border-color",     "control-border");
+
+      transition: background-color c.$duration c.$easing,
+                  border-color     c.$duration c.$easing;
+
+      // ── Thumb ──────────────────────────────────────────────────────────────
+      // The thumb travels along `inset-inline-start` rather than translateX so it
+      // mirrors under `dir="rtl"`; at this size the layout cost is irrelevant.
+      &::after {
+        content:             "";
+        position:            absolute;
+        top:                 50%;
+        inset-inline-start:  c.$toggle-thumb-gap;
+        transform:           translateY(-50%);
+        width:               calc(#{c.$toggle-height} - #{2 * c.$input-border-width} - #{2 * c.$toggle-thumb-gap});
+        aspect-ratio:        1;
+        border-radius:       c.$radius-pill;
+        @include t.theme("background-color", "text-muted");
+        transition: inset-inline-start  c.$duration c.$easing,
+                    background-color    c.$duration c.$easing;
+      }
+
+      // ── Hover (Unchecked) ──────────────────────────────────────────────────
+      @include u.on-hover {
+        @include t.theme("background-color", "control-hover");
+      }
+
+      // ── Focus ──────────────────────────────────────────────────────────────
+      &:focus-visible {
+        outline:         2px solid;
+        outline-offset:  2px;
+        @include t.theme("outline-color", "focus-ring");
+      }
+
+      // ── Checked (Default: Link Color) ──────────────────────────────────────
+      &:checked {
+        @include t.theme("background-color", "fill-link");
+        @include t.theme("border-color",     "fill-link");
+
+        &::after {
+          inset-inline-start: calc(#{c.$toggle-thumb-gap} + #{c.$toggle-width} - #{c.$toggle-height});
+          @include t.theme("background-color", "fill-text-link");
+        }
+
+        @include u.on-hover {
+          @include t.theme("background-color", "fill-link-hover");
+          @include t.theme("border-color",     "fill-link-hover");
+        }
+      }
+    }
+
+    // ── Disabled ─────────────────────────────────────────────────────────────
+    &[disabled],
+    fieldset[disabled] &,
+    input[disabled] {
+      @include t.theme("color", "text-muted");
+      cursor:   not-allowed;
+      opacity:  0.7;
+      input[type="checkbox"] { pointer-events: none; }
+    }
+
+    // ── Semantic Variants ────────────────────────────────────────────────────
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} input[type="checkbox"]:checked {
+        @include t.theme("background-color", "fill-#{$name}");
+        @include t.theme("border-color",     "fill-#{$name}");
+
+        &::after {
+          @include t.theme("background-color", "fill-text-#{$name}");
+        }
+
+        @include u.on-hover {
+          @include t.theme("background-color", "fill-#{$name}-hover");
+          @include t.theme("border-color",     "fill-#{$name}-hover");
+        }
+      }
+    }
+  }
+}

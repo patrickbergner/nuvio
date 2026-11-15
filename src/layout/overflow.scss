@@ -1,0 +1,23 @@
+@use "../config/layers" as l;
+
+@include l.layer("utilities") {
+  .is-clipped {
+    overflow: hidden !important;
+  }
+
+  $overflows: auto clip hidden scroll visible;
+
+  @each $overflow in $overflows {
+    .has-overflow-#{$overflow} {
+      overflow: $overflow !important;
+    }
+
+    .has-overflow-x-#{$overflow} {
+      overflow-x: $overflow !important;
+    }
+
+    .has-overflow-y-#{$overflow} {
+      overflow-y: $overflow !important;
+    }
+  }
+}

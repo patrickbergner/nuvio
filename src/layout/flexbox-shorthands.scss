@@ -1,0 +1,48 @@
+@use "sass:math";
+@use "../config" as c;
+@use "../config/layers" as l;
+
+@mixin flex-short-base($direction, $wrap) {
+  display:         flex;
+  gap:             math.div(c.$block-spacing, 2);
+  flex-direction:  #{$direction};
+  flex-wrap:       #{$wrap};
+}
+
+@mixin flex-short-spaced($direction, $wrap) {
+  @include flex-short-base($direction, $wrap);
+  justify-content: space-between;
+}
+
+@mixin flex-short-leading($direction, $wrap) {
+  @include flex-short-base($direction, $wrap);
+  justify-content: flex-start;
+}
+
+@mixin flex-short-trailing($direction, $wrap) {
+  @include flex-short-base($direction, $wrap);
+  justify-content: flex-end;
+}
+
+@include l.layer("utilities") {
+  .row-stretched { @include flex-short-base("row", "nowrap"); }
+  .col-stretched { @include flex-short-base("column", "nowrap"); }
+  .rows-stretched { @include flex-short-base("row", "wrap"); }
+  .cols-stretched { @include flex-short-base("column", "wrap"); }
+  .row-stretched > *, .col-stretched > *, .rows-stretched > *, .cols-stretched > * { flex-grow: 1; flex-shrink: 1; }
+
+  .row-spaced { @include flex-short-spaced("row", "nowrap"); align-items: center; }
+  .col-spaced { @include flex-short-spaced("column", "nowrap"); }
+  .rows-spaced { @include flex-short-spaced("row", "wrap"); align-items: center; } // vertically align items in a horizontal row
+  .cols-spaced { @include flex-short-spaced("column", "wrap"); }                   // but do not horizontally align items in a vertical column
+
+  .row-leading { @include flex-short-leading("row", "nowrap"); }
+  .col-leading { @include flex-short-leading("column", "nowrap"); }
+  .rows-leading { @include flex-short-leading("row", "wrap"); }
+  .cols-leading { @include flex-short-leading("column", "wrap"); }
+
+  .row-trailing { @include flex-short-trailing("row", "nowrap"); }
+  .col-trailing { @include flex-short-trailing("column", "nowrap"); }
+  .rows-trailing { @include flex-short-trailing("row", "wrap"); }
+  .cols-trailing { @include flex-short-trailing("column", "wrap"); }
+}

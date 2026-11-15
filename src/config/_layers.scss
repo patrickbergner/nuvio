@@ -1,0 +1,27 @@
+@use "." as c;
+
+// ── Layer Order ──────────────────────────────────────────────────────────────
+// Declared up front so precedence never depends on emission order. Loaded from
+// config/themes, which every include list pulls in first.
+
+@if c.$css-layers {
+  @layer nuvio.tokens, nuvio.reset, nuvio.components, nuvio.utilities;
+}
+
+// ── Public: layer() Mixin ────────────────────────────────────────────────────
+// Wraps a module's emission in its layer, or passes it straight through when
+// layers are off – so the default build stays byte-identical.
+//
+//   @include l.layer("components") {
+//     .my-element { … }
+//   }
+
+@mixin layer($name) {
+  @if c.$css-layers {
+    @layer nuvio.#{$name} {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}

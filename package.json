@@ -1,0 +1,56 @@
+{
+    "name": "nuvio",
+    "version": "1.0.0",
+    "homepage": "https://nuvio.emontis.io/",
+    "author": {
+        "name": "Emontis",
+        "email": "contact@emontis.io",
+        "url": "https://emontis.io/"
+    },
+    "description": "Modern and lightweight CSS framework providing a good but small foundation for all types of web applications using the Flexible Box Layout module (Flexbox)",
+    "keywords": [
+        "css",
+        "sass",
+        "scss",
+        "ui",
+        "design-system",
+        "flexbox",
+        "framework",
+        "grid",
+        "responsive",
+        "bulma",
+        "nuvio"
+    ],
+    "license": "MIT",
+    "main": "src/main-full-auto.scss",
+    "style": "dist/nuvio.css",
+    "files": [
+        "dist",
+        "src",
+        "LICENSE",
+        "README.md"
+    ],
+    "devDependencies": {
+        "sass": "^1"
+    },
+    "scripts": {
+        "build": "npm run build:full && npm run build:base",
+        "build:full": "npm run build:full-auto && npm run build:full-prefer && npm run build:full-light && npm run build:full-dark",
+        "build:base": "npm run build:base-auto && npm run build:base-prefer && npm run build:base-light && npm run build:base-dark",
+        "build:full-auto": "sass --style=expanded --no-source-map src/main-full-auto.scss dist/nuvio.css && sass --style=compressed --no-source-map src/main-full-auto.scss dist/nuvio.min.css",
+        "build:full-prefer": "sass --style=expanded --no-source-map src/main-full-prefer.scss dist/nuvio-prefer.css && sass --style=compressed --no-source-map src/main-full-prefer.scss dist/nuvio-prefer.min.css",
+        "build:full-light": "sass --style=expanded --no-source-map src/main-full-light.scss dist/nuvio-light.css && sass --style=compressed --no-source-map src/main-full-light.scss dist/nuvio-light.min.css",
+        "build:full-dark": "sass --style=expanded --no-source-map src/main-full-dark.scss dist/nuvio-dark.css && sass --style=compressed --no-source-map src/main-full-dark.scss dist/nuvio-dark.min.css",
+        "build:base-auto": "sass --style=expanded --no-source-map src/main-base-auto.scss dist/nuvio-base.css && node scripts/purge-vars.js dist/nuvio-base.css && sass --style=compressed --no-source-map src/main-base-auto.scss dist/nuvio-base.min.css && node scripts/purge-vars.js dist/nuvio-base.min.css",
+        "build:base-prefer": "sass --style=expanded --no-source-map src/main-base-prefer.scss dist/nuvio-base-prefer.css && node scripts/purge-vars.js dist/nuvio-base-prefer.css && sass --style=compressed --no-source-map src/main-base-prefer.scss dist/nuvio-base-prefer.min.css && node scripts/purge-vars.js dist/nuvio-base-prefer.min.css",
+        "build:base-light": "sass --style=expanded --no-source-map src/main-base-light.scss dist/nuvio-base-light.css && node scripts/purge-vars.js dist/nuvio-base-light.css && sass --style=compressed --no-source-map src/main-base-light.scss dist/nuvio-base-light.min.css && node scripts/purge-vars.js dist/nuvio-base-light.min.css",
+        "build:base-dark": "sass --style=expanded --no-source-map src/main-base-dark.scss dist/nuvio-base-dark.css && node scripts/purge-vars.js dist/nuvio-base-dark.css && sass --style=compressed --no-source-map src/main-base-dark.scss dist/nuvio-base-dark.min.css && node scripts/purge-vars.js dist/nuvio-base-dark.min.css",
+        "palette": "node scripts/generate-palette.js",
+        "dist-sizes": "node scripts/dist-sizes.js",
+        "dist-sizes-json": "node scripts/dist-sizes.js --json",
+        "prepublishOnly": "npm run build"
+    },
+    "allowScripts": {
+        "@parcel/watcher@2.6.0": true
+    }
+}

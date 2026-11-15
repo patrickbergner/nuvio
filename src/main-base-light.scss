@@ -1,0 +1,4 @@
+// Compile mode: light mode only (base feature set)
+
+@use "config-base" with ($output-mode: "light");
+@use "includes-base";

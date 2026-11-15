@@ -1,0 +1,65 @@
+@use "sass:math";
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  // ── .accordion ─────────────────────────────────────────────────────────────
+  // Styles a native <details>. Open/close is the platform's; giving several
+  // accordions the same `name` attribute makes them mutually exclusive – no JS.
+
+  .accordion {
+    // Tighter than the usual block rhythm: accordions are normally stacked.
+    @include u.block(math.div(c.$block-spacing, 3));
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("border-color",     "border");
+    border-radius:  c.$accordion-radius;
+    border-style:   solid;
+    border-width:   c.$accordion-border-width;
+    overflow:       hidden; // keeps the summary hover fill inside the radius
+
+    > summary {
+      @include t.theme("color", "text-highlight");
+      cursor:              pointer;
+      font-weight:         c.$accordion-summary-weight;
+      list-style:          none; // hides the marker in Firefox
+      padding:             c.$accordion-padding-y c.$accordion-padding-x;
+      padding-inline-end:  2.5em;
+      position:            relative;
+      transition:          background-color c.$duration c.$easing;
+
+      &::-webkit-details-marker { display: none; } // …and in Safari
+
+      &::after {
+        @include u.arrow;
+        @include t.theme("border-color", "text-muted");
+        inset-inline-end: 1.125em;
+      }
+
+      @include u.on-hover {
+        @include t.theme("background-color", "surface-1-hover");
+      }
+
+      // Inset, because `overflow: hidden` above would clip an outer ring.
+      &:focus-visible {
+        outline: 2px solid;
+        @include t.theme("outline-color", "focus-ring");
+        outline-offset: -2px;
+      }
+    }
+
+    &[open] > summary::after {
+      transform: rotate(135deg);
+    }
+
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+  }
+
+  .accordion-content {
+    padding-block-end:  c.$accordion-padding-y;
+    padding-inline:     c.$accordion-padding-x;
+  }
+}

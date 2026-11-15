@@ -1,0 +1,362 @@
+@use "../../src/config" as c;
+@use "../../src/config/utilities" as u;
+@use "../../src/config/layers" as l;
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+$sidebar-width:            15rem      !default;
+$sidebar-width-collapsed:  4.25rem    !default;
+$sidebar-padding:          .75rem     !default;
+$sidebar-bar-height:       3.5rem     !default;
+$sidebar-breakpoint:       "sm"       !default;
+$sidebar-z:                20         !default;
+$sidebar-accent:           "link"     !default;
+$sidebar-item-radius:      c.$radius  !default;
+
+// Collapsed state: a checked .sidebar-collapse-input anywhere in the layout.
+$_collapsed: ".sidebar-layout:has(.sidebar-collapse-input:checked)";
+
+// Visually hidden, still read out – the label of a collapsed item.
+@mixin _hidden-label {
+  clip-path:    inset(50%);
+  height:       1px;
+  overflow:     hidden;
+  position:     absolute;
+  white-space:  nowrap;
+  width:        1px;
+}
+
+@include l.layer("components") {
+  // ── .sidebar-layout ────────────────────────────────────────────────────────
+  .sidebar-layout {
+    display:     flex;
+    min-height:  100vh;
+  }
+
+  .sidebar-main {
+    flex:       1;
+    min-width:  0;
+  }
+
+  // ── .sidebar ───────────────────────────────────────────────────────────────
+  .sidebar {
+    background-color:  var(--nv-surface-1);
+    border-color:      var(--nv-border);
+    border-style:      solid;
+    border-width:      0;
+    display:           flex;
+    position:          sticky;
+    top:               0;
+    z-index:           $sidebar-z;
+  }
+
+  .sidebar-head {
+    align-items:      center;
+    display:          flex;
+    justify-content:  space-between;
+  }
+
+  .sidebar-brand {
+    align-items:  center;
+    display:      flex;
+
+    img,
+    svg {
+      display:  block;
+      height:   2.25rem;
+      width:    auto;
+    }
+  }
+
+  .sidebar-nav {
+    display:         flex;
+    flex-direction:  column;
+    gap:             .2rem;
+  }
+
+  // ── .sidebar-item ──────────────────────────────────────────────────────────
+  .sidebar-item {
+    align-items:    center;
+    border:         1px solid transparent;
+    border-radius:  $sidebar-item-radius;
+    color:          var(--nv-text);
+    cursor:         pointer;
+    display:        flex;
+    gap:            .6rem;
+    padding:        .55rem .7rem;
+    transition:     background-color c.$duration c.$easing, color c.$duration c.$easing;
+
+    @include u.on-hover {
+      background-color:  var(--nv-surface-2);
+      color:             var(--nv-text-highlight);
+    }
+
+    &:focus-visible {
+      outline:         2px solid;
+      outline-color:   var(--nv-focus-ring);
+      outline-offset:  -2px;
+    }
+
+    &.is-active {
+      background-color:  color-mix(in srgb, var(--nv-fill-#{$sidebar-accent}) 14%, transparent);
+      border-color:      color-mix(in srgb, var(--nv-fill-#{$sidebar-accent}) 40%, transparent);
+      color:             var(--nv-fill-#{$sidebar-accent});
+    }
+
+    .icon {
+      flex-shrink: 0;
+    }
+  }
+
+  // Only the label shrinks, so a long name truncates instead of pushing the
+  // count out of the sidebar.
+  .sidebar-label {
+    min-width:      0;
+    overflow:       hidden;
+    text-overflow:  ellipsis;
+    white-space:    nowrap;
+  }
+
+  .sidebar-count {
+    color:                 var(--nv-text-muted);
+    font-size:             .85em;
+    font-variant-numeric:  tabular-nums;
+    margin-inline-start:   auto;
+  }
+
+  .sidebar-foot {
+    border-block-start:   1px solid var(--nv-border);
+    display:              flex;
+    flex-direction:       column;
+    gap:                  .5rem;
+    margin-block-start:   1rem;
+    padding-block-start:  .85rem;
+  }
+
+  // ── .sidebar-collapse ──────────────────────────────────────────────────────
+  // A label around a checkbox: toggling needs no script. Remembering the state
+  // across pages is the application's, which renders the box `checked`.
+  .sidebar-collapse-input {
+    @include _hidden-label;
+  }
+
+  .sidebar-collapse:has(.sidebar-collapse-input:focus-visible) {
+    outline:         2px solid;
+    outline-color:   var(--nv-focus-ring);
+    outline-offset:  -2px;
+  }
+
+  // ── .sidebar-burger ────────────────────────────────────────────────────────
+  .sidebar-burger {
+    appearance:           none;
+    background:           none;
+    border:               none;
+    cursor:               pointer;
+    display:              none;
+    height:               $sidebar-bar-height;
+    margin-inline-start:  auto;
+    position:             relative;
+    width:                $sidebar-bar-height;
+
+    &:focus-visible {
+      outline:         2px solid;
+      outline-color:   var(--nv-focus-ring);
+      outline-offset:  -2px;
+    }
+
+    span {
+      background-color:  var(--nv-text);
+      display:           block;
+      height:            2px;
+      left:              calc(50% - 11px);
+      position:          absolute;
+      transform-origin:  center;
+      transition:        opacity c.$duration c.$easing, transform c.$duration c.$easing;
+      width:             22px;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition-property: opacity;
+      }
+
+      &:nth-child(1) { top: calc(50% - 8px); }
+      &:nth-child(2) { top: calc(50% - 1px); }
+      &:nth-child(3) { top: calc(50% + 6px); }
+    }
+  }
+
+  .sidebar:has(.sidebar-body:popover-open) .sidebar-burger span {
+    &:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    &:nth-child(2) { opacity: 0; }
+    &:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+
+  // ── Mobile: a top bar, the body opens as a popover under it ────────────────
+  @include u.bp-below($sidebar-breakpoint) {
+    .sidebar-layout {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      border-block-end-width:  1px;
+      flex-direction:          column;
+      padding-inline:          $sidebar-padding;
+    }
+
+    .sidebar-head {
+      height: $sidebar-bar-height;
+    }
+
+    .sidebar-brand img,
+    .sidebar-brand svg {
+      height: 2rem;
+    }
+
+    .sidebar-burger {
+      display:            block;
+      margin-inline-end:  -$sidebar-padding;
+    }
+
+    // An open popover sits in the top layer, positioned against the viewport,
+    // so the bar height is what drops it under the bar – no anchor positioning,
+    // which behaves the same in every browser.
+    .sidebar-body[popover] {
+      background-color:  var(--nv-surface-1);
+      border:            0;
+      border-block-end:  1px solid var(--nv-border);
+      border-radius:     0 0 c.$radius-lg c.$radius-lg;
+      box-shadow:        0 18px 32px rgba(0, 0, 0, .45);
+      color:             inherit;
+      inset:             $sidebar-bar-height 0 auto 0;
+      margin:            0;
+      max-height:        calc(100dvh - #{$sidebar-bar-height});
+      overflow-y:        auto;
+      padding:           $sidebar-padding;
+      position:          fixed;
+      width:             100%;
+
+      &:popover-open {
+        display:         flex;
+        flex-direction:  column;
+      }
+    }
+
+    .sidebar-collapse,
+    .sidebar-when-collapsed {
+      display: none !important;
+    }
+  }
+
+  // ── Desktop: a full-height rail beside the page ────────────────────────────
+  @include u.bp-from($sidebar-breakpoint) {
+    .sidebar {
+      border-inline-end-width:  1px;
+      flex:                     0 0 $sidebar-width;
+      flex-direction:           column;
+      height:                   100vh;
+      padding:                  1rem $sidebar-padding;
+      width:                    $sidebar-width;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: flex-basis c.$duration c.$easing, width c.$duration c.$easing;
+      }
+    }
+
+    .sidebar-head {
+      margin-block-end:  1.25rem;
+      padding-inline:    .35rem;
+    }
+
+    // The UA's popover chrome applies even while the popover is closed and in
+    // flow; this also tidies up one left open at mobile width.
+    .sidebar-body[popover] {
+      background:      none;
+      border:          0;
+      color:           inherit;
+      display:         flex;
+      flex:            1 1 auto;
+      flex-direction:  column;
+      height:          auto;
+      inset:           auto;
+      margin:          0;
+      max-height:      none;
+      min-height:      0;
+      overflow:        visible;
+      padding:         0;
+      position:        static;
+      width:           auto;
+    }
+
+    .sidebar-nav {
+      flex:        1 1 auto;
+      min-height:  0;
+      overflow-y:  auto;
+    }
+
+    .sidebar-layout:not(:has(.sidebar-collapse-input:checked)) .sidebar-when-collapsed {
+      display: none !important;
+    }
+
+    // ── Collapsed: icons only, each label flies out on hover or focus ────────
+    #{$_collapsed} {
+      .sidebar {
+        flex-basis:  $sidebar-width-collapsed;
+        width:       $sidebar-width-collapsed;
+      }
+
+      .sidebar-when-expanded {
+        display: none !important;
+      }
+
+      .sidebar-head {
+        justify-content:  center;
+        padding-inline:   0;
+      }
+
+      // Scrolling would clip the flyouts, so a collapsed nav does not scroll.
+      .sidebar-nav {
+        overflow: visible;
+      }
+
+      .sidebar-item,
+      .sidebar-foot .button {
+        justify-content:  center;
+        padding-inline:   0;
+        position:         relative;
+      }
+
+      .sidebar-foot .button .icon {
+        margin-inline: 0;
+      }
+
+      .sidebar-count {
+        @include _hidden-label;
+      }
+
+      .sidebar-label {
+        @include _hidden-label;
+      }
+
+      .sidebar :has(> .sidebar-label) {
+        position: relative;
+      }
+
+      .sidebar :hover > .sidebar-label,
+      .sidebar :focus-visible > .sidebar-label,
+      .sidebar-collapse:has(:focus-visible) > .sidebar-label {
+        background-color:     var(--nv-surface-3);
+        border:               1px solid var(--nv-border);
+        border-radius:        $sidebar-item-radius;
+        box-shadow:           0 6px 16px rgba(0, 0, 0, .35);
+        clip-path:            none;
+        color:                var(--nv-text-highlight);
+        height:               auto;
+        inset-inline-start:   calc(100% + .5rem);
+        overflow:             visible;
+        padding:              .3rem .6rem;
+        pointer-events:       none;
+        top:                  50%;
+        transform:            translateY(-50%);
+        width:                auto;
+      }
+    }
+  }
+}

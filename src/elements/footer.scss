@@ -1,0 +1,9 @@
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .footer {
+    @include t.theme("background-color", "surface-1");
+    padding: 3rem 1.5rem 6rem;
+  }
+}

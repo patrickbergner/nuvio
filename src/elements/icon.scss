@@ -1,0 +1,63 @@
+@use "../config" as c;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .icon {
+    align-items:          center;
+    display:              inline-flex;
+    flex-shrink:          0;
+    justify-content:      center;
+    height:               1.5em;
+    width:                1.5em;
+    transition-duration:  c.$duration;
+    transition-property:  color;
+
+    &.is-small {
+      font-size:  1em;
+      height:     1em;
+      width:      1em;
+    }
+
+    &.is-medium {
+      font-size:  2em;
+      height:     1em;
+      width:      1em;
+    }
+
+    &.is-large {
+      font-size:  3em;
+      height:     1em;
+      width:      1em;
+    }
+
+    // Not named is-inline, though that is what it does: the display utility of
+    // that name carries `display: inline !important` and would win here, taking
+    // the flex centering above with it. The glyph then falls to the bottom of an
+    // inherited line box, a quarter of a line low, wherever the parent is a flex
+    // container. The sibling trap: .is-block (display) is not .block, the
+    // prose bottom-margin helper from elements/block.scss.
+    &.is-glyph {
+      font-size:            inherit;
+      height:               1em;
+      width:                1em;
+      vertical-align:       -.2em;
+      color:                inherit;
+      transform:            translateY(c.$text-icon-y-compensation);
+      margin-inline-start:  .0667em;
+    }
+
+    // Framework-drawn close glyph – two crossed bars, no icon font required.
+    // Reuses the technique the navbar burger uses for its own open-state X.
+    &.is-close {
+      @include u.close-x;
+    }
+
+    &.yc-up1   { transform: translateY(c.$text-icon-y-compensation - .5px); }
+    &.yc-up2   { transform: translateY(c.$text-icon-y-compensation - 1px); }
+    &.yc-up3   { transform: translateY(c.$text-icon-y-compensation - 1.5px); }
+    &.yc-down1 { transform: translateY(c.$text-icon-y-compensation + .5px); }
+    &.yc-down2 { transform: translateY(c.$text-icon-y-compensation + 1px); }
+    &.yc-down3 { transform: translateY(c.$text-icon-y-compensation + 1.5px); }
+  }
+}

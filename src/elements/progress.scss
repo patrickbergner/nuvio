@@ -1,0 +1,85 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@mixin _track($key) {
+  @include t.theme("background-color", $key);
+  &::-webkit-progress-bar {
+    overflow:       hidden;
+    border-radius:  c.$progress-radius;
+    @include t.theme("background-color", $key);
+  }
+}
+
+@mixin _fill($key) {
+  &::-webkit-progress-value {
+    @include t.theme("background-color", $key);
+  }
+  &::-moz-progress-bar {
+    @include t.theme("background-color", $key);
+  }
+}
+
+@include l.layer("components") {
+  @keyframes nv-progress-indeterminate {
+    0%   { background-position: 90% center; }
+    100% { background-position: 10% center; }
+  }
+
+  .progress {
+    @include u.block;
+    appearance: none;
+    -webkit-appearance: none;
+    display:        block;
+    width:          100%;
+    height:         c.$progress-height;
+    border:         none;
+    border-radius:  c.$progress-radius;
+    overflow:       hidden;
+    padding:        0;
+
+    @include _track("control-bg");
+    @include _fill("control-text");
+
+    @include t.theme("--_pg-track", "control-bg");
+    @include t.theme("--_pg-fill",  "control-text");
+
+    // Color variants
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        @include _fill("fill-#{$name}");
+        @include t.theme("--_pg-fill", "fill-#{$name}");
+      }
+    }
+
+    // Size modifiers
+    &.is-small  { height: c.$progress-height * 0.625; }
+    &.is-medium { height: c.$progress-height * 1.25; }
+    &.is-large  { height: c.$progress-height * 1.5; }
+  }
+
+  // Indeterminate state
+  .progress:not([value]) {
+    $grad: linear-gradient(
+      90deg,
+      var(--_pg-track)  0%,
+      var(--_pg-track) 45%,
+      var(--_pg-fill)  45%,
+      var(--_pg-fill)  55%,
+      var(--_pg-track) 55%,
+      var(--_pg-track) 100%
+    );
+
+    background:       $grad;
+    background-size:  200% 100%;
+    animation:        nv-progress-indeterminate 0.8s cubic-bezier(0.65, 0, 0.35, 1) infinite alternate;
+
+    &::-webkit-progress-bar {
+      background: transparent;
+    }
+
+    &::-webkit-progress-value { background: transparent; }
+    &::-moz-progress-bar      { background: transparent; }
+  }
+}

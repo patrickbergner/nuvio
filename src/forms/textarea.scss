@@ -1,0 +1,26 @@
+@use "../config" as c;
+@use "form-utilities";
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .textarea {
+    @include form-utilities.control;
+    display:    block;
+    max-width:  100%;
+    min-width:  100%;
+    padding:    c.$input-padding-x;
+    resize:     vertical;
+    height:     auto;
+
+    &:not([rows]) {
+      max-height:  40em;
+      min-height:  8em;
+    }
+    &[rows] { height: initial; }
+
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+    &.has-fixed-size { resize: none; }
+  }
+}

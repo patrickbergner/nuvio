@@ -1,0 +1,51 @@
+@use "nuvio/src/config/themes" as t;
+
+@font-face {
+    font-family: "Source Sans 3";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("./source-sans-3-400.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("./source-sans-3-700.woff2") format("woff2");
+}
+
+.hero-split {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    padding: 3rem 0;
+
+    & > * {
+        flex: 2 1 20rem;
+    }
+
+    & > *:last-child {
+        flex-grow: 1;
+    }
+
+    @include t.theme("border-bottom-color", "border");
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+.brand-strip {
+    @include t.fill("primary");
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+}
+
+// Brand the navbar with the primary-fill token so it adapts to light/dark mode.
+.navbar {
+    --nv-navbar-bg:    var(--nv-fill-primary);
+    --nv-navbar-text:  var(--nv-fill-text-primary);
+    --nv-navbar-hover: var(--nv-fill-primary-active);
+}

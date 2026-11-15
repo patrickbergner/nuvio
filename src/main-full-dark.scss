@@ -1,0 +1,6 @@
+// Compile mode: dark mode only
+
+@use "config" with (
+  $output-mode: "dark",
+);
+@use "includes-full";

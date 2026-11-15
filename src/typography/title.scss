@@ -1,0 +1,76 @@
+@use "sass:map";
+@use "sass:math";
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .title,
+  .subtitle {
+    @include u.block(math.div(c.$block-spacing, 2));
+    word-break: break-word;
+
+    em,
+    span {
+      font-weight: inherit;
+    }
+
+    sub { font-size: 0.75em; }
+    sup { font-size: 0.75em; }
+
+    .tag { vertical-align: middle; }
+  }
+
+  .title {
+    @include t.theme("color", "text-highlight");
+    font-size:    map.get(c.$heading-levels, 1, "title", "size");
+    font-weight:  map.get(c.$heading-levels, 1, "title", "weight");
+    line-height:  c.$heading-line-height;
+
+    strong {
+      color:        inherit;
+      font-weight:  c.$font-weight-extrabold;
+    }
+
+    &:not(.is-spaced):has(+ .title) {
+      margin-bottom: .6rem;
+    }
+
+    &:not(.is-spaced):has(+ .subtitle) {
+      margin-bottom: 0;
+    }
+
+    @each $level, $spec in c.$heading-levels {
+      $title-spec: map.get($spec, "title");
+      &.is-level-#{$level} {
+        font-size:    map.get($title-spec, "size");
+        font-weight:  map.get($title-spec, "weight");
+      }
+    }
+  }
+
+  .subtitle {
+    @include t.theme("color", "text-muted");
+    font-size:    map.get(c.$heading-levels, 1, "subtitle", "size");
+    font-weight:  map.get(c.$heading-levels, 1, "subtitle", "weight");
+    line-height:  c.$heading-line-height;
+
+    strong {
+      color:        inherit;
+      font-weight:  c.$font-weight-semibold;
+    }
+
+    &:not(.is-spaced):has(+ .subtitle) {
+      margin-bottom: 0;
+    }
+
+    @each $level, $spec in c.$heading-levels {
+      $subtitle-spec: map.get($spec, "subtitle");
+      &.is-level-#{$level} {
+        font-size:    map.get($subtitle-spec, "size");
+        font-weight:  map.get($subtitle-spec, "weight");
+      }
+    }
+  }
+}

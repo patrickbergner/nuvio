@@ -1,0 +1,415 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  // ── Base ───────────────────────────────────────────────────────────────────
+
+  .button {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    gap:              .2em;
+    white-space:      nowrap;
+    vertical-align:   middle;
+
+    // Asymmetric block padding rather than a transform: it shifts the centered
+    // label optically without touching the button's height or its icons.
+    padding-block:   calc(#{c.$button-padding-y} - #{c.$control-label-y-compensation}) calc(#{c.$button-padding-y} + #{c.$control-label-y-compensation});
+    padding-inline:  c.$button-padding-x;
+    line-height:     c.$button-line-height;
+    border-style:   solid;
+    border-width:   c.$button-border-width;
+    border-radius:  c.$button-radius;
+
+    font-size:        c.$button-font-size;
+    font-weight:      c.$button-font-weight;
+    font-family:      inherit;
+    text-align:       center;
+    text-decoration:  none;
+    height:           c.$input-height;
+
+    cursor:       pointer;
+    user-select:  none;
+    appearance:   none;
+
+    transition: background-color c.$duration c.$easing,
+      border-color c.$duration c.$easing,
+      color c.$duration c.$easing,
+      opacity c.$duration c.$easing;
+
+    @include t.theme("background-color", "control-bg");
+    @include t.theme("border-color", "control-border");
+    @include t.theme("color", "control-text");
+
+    strong {
+      color: inherit;
+    }
+
+    .icon {
+
+      &,
+      &.is-small,
+      &.is-medium,
+      &.is-large {
+        font-size:  inherit;
+        height:     1.5em;
+        width:      1.5em;
+      }
+
+      transform:            translateY(c.$button-icon-y-compensation);
+      margin-inline-start:  -.3em + c.$button-icon-x-compensation;
+      margin-inline-end:    0;
+
+      /* vertical compensation (yc) micro adjustments for specific icons */
+      &.yc-up1   { transform: translateY(c.$button-icon-y-compensation - .5px); }
+      &.yc-up2   { transform: translateY(c.$button-icon-y-compensation - 1px); }
+      &.yc-up3   { transform: translateY(c.$button-icon-y-compensation - 1.5px); }
+      &.yc-down1 { transform: translateY(c.$button-icon-y-compensation + .5px); }
+      &.yc-down2 { transform: translateY(c.$button-icon-y-compensation + 1px); }
+      &.yc-down3 { transform: translateY(c.$button-icon-y-compensation + 1.5px); }
+    }
+
+    &.has-icon-trailing .icon:last-child {
+      margin-inline-start:  0;
+      margin-inline-end:    -.3em + c.$button-icon-x-compensation;
+    }
+
+    &.is-icon-only .icon {
+      margin-inline: -.4em + c.$button-icon-x-compensation;
+    }
+
+    &.is-pill .icon {
+      margin-inline-start: -.5em + c.$button-icon-x-compensation;
+    }
+
+    &.is-pill.has-icon-trailing .icon:last-child {
+      margin-inline-start:  0;
+      margin-inline-end:    -.5em + c.$button-icon-x-compensation;
+    }
+
+    &.is-pill.is-icon-only .icon {
+      margin-inline: -1em + c.$button-icon-x-compensation;
+    }
+
+    @include u.on-hover {
+      @include t.theme("background-color", "control-hover");
+      @include t.theme("color", "control-text");
+    }
+    &.is-hover {
+      @include t.theme("background-color", "control-hover");
+      @include t.theme("color", "control-text");
+    }
+
+    &.is-hoverless {
+
+      @include u.on-hover {
+        @include t.theme("background-color", "control-bg");
+        @include t.theme("color", "control-text");
+      }
+      &.is-hover {
+        @include t.theme("background-color", "control-bg");
+        @include t.theme("color", "control-text");
+      }
+    }
+
+    &:focus-visible,
+    &.is-focused {
+      outline: 2px solid;
+      @include t.theme("outline-color", "focus-ring");
+      outline-offset: 2px;
+    }
+
+    &:active,
+    &.is-active {
+      @include t.theme("background-color", "control-hover");
+      opacity: 0.85;
+    }
+
+    &[disabled],
+    fieldset[disabled] & {
+      opacity:         0.5;
+      pointer-events:  none;
+    }
+
+    // ── Solid Color Variants ─────────────────────────────────────────────────
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        @include t.fill($name);
+
+        @include u.on-hover {
+          @include t.theme("background-color", "fill-#{$name}-hover");
+          @include t.theme("border-color", "fill-#{$name}-hover");
+          @include t.theme("color", "fill-text-#{$name}");
+          opacity: 1;
+        }
+        &.is-hover {
+          @include t.theme("background-color", "fill-#{$name}-hover");
+          @include t.theme("border-color", "fill-#{$name}-hover");
+          @include t.theme("color", "fill-text-#{$name}");
+          opacity: 1;
+        }
+
+        &:active,
+        &.is-active {
+          @include t.theme("background-color", "fill-#{$name}-active");
+          @include t.theme("border-color", "fill-#{$name}-active");
+          @include t.theme("color", "fill-text-#{$name}");
+          opacity: 1;
+        }
+
+        &:focus-visible {
+          @include t.theme("outline-color", "fill-#{$name}");
+        }
+
+        &[disabled],
+        fieldset[disabled] & {
+          @include t.theme("background-color", "fill-#{$name}");
+          @include t.theme("border-color", "fill-#{$name}");
+          opacity:         0.5;
+          pointer-events:  none;
+        }
+
+        &.is-loading::after {
+          @include t.theme("border-color", "fill-text-#{$name}");
+          border-right-color:  transparent;
+          border-top-color:    transparent;
+        }
+
+        &.is-hoverless {
+
+          @include u.on-hover {
+            @include t.fill($name);
+            opacity: 1;
+          }
+          &.is-hover {
+            @include t.fill($name);
+            opacity: 1;
+          }
+        }
+
+        &.is-light {
+          @include t.theme("background-color", "tint-light-#{$name}");
+          @include t.theme("border-color", "tint-light-#{$name}");
+          @include t.theme("color", "tint-light-text-#{$name}");
+
+          @include u.on-hover {
+            @include t.theme("background-color", "tint-light-#{$name}");
+            @include t.theme("color", "tint-light-text-#{$name}");
+            opacity: 0.85;
+          }
+          &.is-hover {
+            @include t.theme("background-color", "tint-light-#{$name}");
+            @include t.theme("color", "tint-light-text-#{$name}");
+            opacity: 0.85;
+          }
+
+          &.is-loading::after {
+            @include t.theme("border-color", "tint-light-text-#{$name}");
+            border-right-color:  transparent;
+            border-top-color:    transparent;
+          }
+        }
+
+        &.is-dark {
+          @include t.theme("background-color", "tint-dark-#{$name}");
+          @include t.theme("border-color", "tint-dark-#{$name}");
+          @include t.theme("color", "tint-dark-text-#{$name}");
+
+          @include u.on-hover {
+            @include t.theme("background-color", "tint-dark-#{$name}");
+            @include t.theme("color", "tint-dark-text-#{$name}");
+            opacity: 0.85;
+          }
+          &.is-hover {
+            @include t.theme("background-color", "tint-dark-#{$name}");
+            @include t.theme("color", "tint-dark-text-#{$name}");
+            opacity: 0.85;
+          }
+
+          &.is-loading::after {
+            @include t.theme("border-color", "tint-dark-text-#{$name}");
+            border-right-color:  transparent;
+            border-top-color:    transparent;
+          }
+        }
+      }
+    }
+
+    // ── Outlined ─────────────────────────────────────────────────────────────
+
+    &.is-outlined {
+      background-color: transparent;
+      @include t.theme("border-color", "control-border");
+      @include t.theme("color", "control-text");
+
+      @include u.on-hover {
+        @include t.theme("background-color", "control-hover");
+      }
+      &.is-hover {
+        @include t.theme("background-color", "control-hover");
+      }
+
+      &.is-hoverless {
+
+        @include u.on-hover {
+          background-color: transparent;
+        }
+        &.is-hover {
+          background-color: transparent;
+        }
+      }
+
+      &[disabled],
+      fieldset[disabled] & {
+        background-color: transparent;
+      }
+
+      @each $name, $_ in c.$semantic-colors {
+        &.is-#{$name} {
+          background-color: transparent;
+          @include t.theme("border-color", "fill-#{$name}");
+          @include t.theme("color", "ink-#{$name}");
+
+          @include u.on-hover {
+            @include t.theme("background-color", "fill-#{$name}-hover");
+            @include t.theme("border-color", "fill-#{$name}-hover");
+            @include t.theme("color", "fill-text-#{$name}");
+            opacity: 1;
+          }
+          &.is-hover {
+            @include t.theme("background-color", "fill-#{$name}-hover");
+            @include t.theme("border-color", "fill-#{$name}-hover");
+            @include t.theme("color", "fill-text-#{$name}");
+            opacity: 1;
+          }
+
+          &.is-hoverless {
+
+            @include u.on-hover {
+              background-color: transparent;
+              @include t.theme("border-color", "fill-#{$name}");
+              @include t.theme("color", "ink-#{$name}");
+              opacity: 1;
+            }
+            &.is-hover {
+              background-color: transparent;
+              @include t.theme("border-color", "fill-#{$name}");
+              @include t.theme("color", "ink-#{$name}");
+              opacity: 1;
+            }
+          }
+
+          &:active,
+          &.is-active {
+            @include t.theme("background-color", "fill-#{$name}-active");
+            @include t.theme("border-color", "fill-#{$name}-active");
+            @include t.theme("color", "fill-text-#{$name}");
+            opacity: 1;
+          }
+
+          &:focus-visible {
+            @include t.theme("outline-color", "fill-#{$name}");
+          }
+
+          // The solid-fill spinner color would be invisible on a transparent face.
+          &.is-loading::after {
+            @include t.theme("border-color", "ink-#{$name}");
+            border-right-color:  transparent;
+            border-top-color:    transparent;
+          }
+        }
+      }
+    }
+
+    // ── Ghost ────────────────────────────────────────────────────────────────
+
+    &.is-ghost {
+      background:    transparent;
+      border-color:  transparent;
+      box-shadow:    none;
+      @include t.theme("color", "ink-link");
+      text-decoration: none;
+
+      @include u.on-hover {
+        @include t.theme("color", "fill-link-hover");
+      }
+      &.is-hover {
+        @include t.theme("color", "fill-link-hover");
+      }
+
+      &:active,
+      &.is-active {
+        @include t.theme("color", "fill-link-active");
+      }
+
+      // Ghost keeps the link ink whatever semantic color is also set – so does its
+      // spinner; the solid-fill override would be invisible here.
+      &.is-loading::after {
+        @include t.theme("border-color", "ink-link");
+        border-right-color:  transparent;
+        border-top-color:    transparent;
+      }
+    }
+
+    // ── Sizes ────────────────────────────────────────────────────────────────
+
+    &.is-small {
+      font-size: c.$font-size-sm;
+    }
+
+    &.is-normal {
+      font-size: c.$button-font-size;
+    }
+
+    &.is-medium {
+      font-size: c.$font-size-lg;
+    }
+
+    &.is-large {
+      font-size: c.$font-size-xl;
+    }
+
+    // ── Layout ───────────────────────────────────────────────────────────────
+
+    &.is-fullwidth {
+      display:  flex;
+      width:    100%;
+    }
+
+    &.is-pill {
+      border-radius:   c.$radius-pill;
+      padding-inline:  c.$button-padding-x + 0.25em;
+    }
+
+    // ── Loading ──────────────────────────────────────────────────────────────
+
+    &.is-loading {
+      color:           transparent !important;
+      pointer-events:  none;
+      position:        relative;
+
+      &::after {
+        @include u.loader;
+        position:  absolute !important;
+        left:      calc(50% - 0.5em);
+        top:       calc(50% - 0.5em);
+        @include t.theme("border-color", "control-text");
+        border-right-color:  transparent;
+        border-top-color:    transparent;
+      }
+    }
+
+    // ── Static ───────────────────────────────────────────────────────────────
+
+    &.is-static {
+      @include t.theme("background-color", "surface-1");
+      @include t.theme("border-color", "border");
+      @include t.theme("color", "text-muted");
+      box-shadow:      none;
+      pointer-events:  none;
+    }
+  }
+}

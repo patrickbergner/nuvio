@@ -1,0 +1,39 @@
+{
+    "name": "demo-custom-bundle",
+    "version": "1.0.0",
+    "private": true,
+    "engines": {
+        "node": "^22.22.3 || ^24.15.0 || >=26"
+    },
+    "dependencies": {
+        "nuvio": "file:../..",
+        "lucide-static": "^1",
+        "@fontsource/source-sans-3": "^5"
+    },
+    "devDependencies": {
+        "@fullhuman/postcss-purgecss": "^8",
+        "cssnano": "^9",
+        "postcss-cli": "^12",
+        "postcss": "^8",
+        "sass": "^1",
+        "subset-font": "^2"
+    },
+    "scripts": {
+        "build": "npm run build:fonts && npm run build:css && npm run build:hash && npm run build:summary",
+        "build:dev": "SKIP_PURGECSS=1 SKIP_ICON_SUBSET=1 SKIP_VAR_SHORTEN=1 npm run build",
+        "build:fonts": "node scripts/subset-fonts.js",
+        "build:css": "npm run build:css:icons && npm run build:css:sass && npm run build:css:postcss && npm run build:css:shorten && npm run build:css:report && npm run build:css:clean",
+        "build:css:icons": "node scripts/subset-icons.js",
+        "build:css:sass": "sass --load-path=node_modules --style=expanded --no-source-map src/app.scss dist/app.tmp.css",
+        "build:css:postcss": "postcss dist/app.tmp.css -o dist/app.css --config postcss.config.cjs",
+        "build:css:shorten": "node scripts/shorten-vars.js dist/app.css",
+        "build:css:report": "node scripts/report-sizes.js compare dist/app.tmp.css dist/app.css \"CSS minification\"",
+        "build:css:clean": "node -e \"require('fs').rmSync('dist/app.tmp.css'); require('fs').rmSync('src/_icons-generated.scss');\"",
+        "build:css:dev": "SKIP_PURGECSS=1 SKIP_ICON_SUBSET=1 SKIP_VAR_SHORTEN=1 npm run build:css",
+        "build:hash": "node scripts/hash-assets.js",
+        "build:summary": "node scripts/report-sizes.js summary \"dist/app.*.css\" \"dist/*.woff2\""
+    },
+    "allowScripts": {
+        "@parcel/watcher": false
+    }
+}

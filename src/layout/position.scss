@@ -1,0 +1,16 @@
+@use "../config/layers" as l;
+
+@include l.layer("utilities") {
+  .overlay {
+    inset:     0;
+    position:  absolute;
+  }
+
+  $positions: absolute fixed relative static sticky;
+
+  @each $position in $positions {
+    .is-pos-#{$position} {
+      position: $position !important;
+    }
+  }
+}

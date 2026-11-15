@@ -1,0 +1,20 @@
+@use "../config/layers" as l;
+
+@include l.layer("utilities") {
+  .is-clickable {
+    cursor:          pointer !important;
+    pointer-events:  all !important;
+  }
+
+  .is-unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select:   none;
+    -moz-user-select:      none;
+    -ms-user-select:       none;
+    user-select:           none;
+  }
+
+  .no-pointer-events {
+    pointer-events: none;
+  }
+}

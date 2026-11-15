@@ -1,0 +1,66 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .box {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("border-color", "border");
+    border-width:   c.$box-border-width;
+    border-style:   solid;
+    border-radius:  c.$box-radius;
+    display:        block;
+    padding:        c.$box-padding;
+    --nv-control-bg: var(--nv-surface-2);
+    --nv-control-hover: var(--nv-surface-2-hover);
+
+    a:not(.button):not(.dropdown-item) {
+      color: currentColor;
+    }
+
+    strong {
+      color: currentColor;
+    }
+
+    code,
+    pre {
+      @include t.theme("background-color", "surface-2");
+    }
+
+    pre code {
+      background: transparent;
+    }
+
+    .title,
+    .subtitle,
+    .content {
+      color: currentColor;
+    }
+
+    &.is-level-bg {
+      @include t.theme("background-color", "bg");
+      --nv-control-bg: var(--nv-surface-1);
+      --nv-control-hover: var(--nv-surface-1-hover);
+    }
+
+    &.is-level-2 {
+      @include t.theme("background-color", "surface-2");
+      --nv-control-bg: var(--nv-surface-3);
+      --nv-control-hover: var(--nv-surface-3-hover);
+    }
+
+    &.is-level-3 {
+      @include t.theme("background-color", "surface-3");
+      --nv-control-bg: var(--nv-surface-4);
+      --nv-control-hover: var(--nv-surface-4-hover);
+    }
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        @include t.theme("background-color", "tint-#{$name}");
+        @include t.theme("border-color", "fill-#{$name}");
+        @include t.theme("color", "tint-text-#{$name}");
+      }
+    }
+  }
+}

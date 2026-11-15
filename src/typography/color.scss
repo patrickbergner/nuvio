@@ -1,0 +1,25 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("utilities") {
+  .has-background { @include t.theme("background-color", "bg", $important: true); }
+  .has-text-normal { @include t.theme("color", "text", $important: true); }
+  .has-text-muted { @include t.theme("color", "text-muted", $important: true); }
+  .has-text-highlight { @include t.theme("color", "text-highlight", $important: true); }
+
+  .has-text-current { color: currentColor !important; }
+  .has-text-inherit { color: inherit !important; }
+  .has-background-current { background-color: currentColor !important; }
+  .has-background-inherit { background-color: inherit !important; }
+
+  @each $name, $_ in c.$semantic-colors {
+    .has-text-#{$name}             { @include t.theme("color", "ink-#{$name}", $important: true); }
+    .has-text-#{$name}-invert      { @include t.theme("color", "fill-text-#{$name}", $important: true); }
+    .has-text-#{$name}-light       { @include t.theme("color", "tint-light-text-#{$name}", $important: true); }
+    .has-text-#{$name}-dark        { @include t.theme("color", "tint-dark-text-#{$name}", $important: true); }
+    .has-background-#{$name}       { @include t.theme("background-color", "fill-#{$name}", $important: true); }
+    .has-background-#{$name}-light { @include t.theme("background-color", "tint-light-#{$name}", $important: true); }
+    .has-background-#{$name}-dark  { @include t.theme("background-color", "tint-dark-#{$name}", $important: true); }
+  }
+}

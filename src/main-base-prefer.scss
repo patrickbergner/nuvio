@@ -1,0 +1,4 @@
+// Compile mode: OS preference detection only – no html class override (base feature set)
+
+@use "config-base" with ($output-mode: "prefer");
+@use "includes-base";

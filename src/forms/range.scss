@@ -1,0 +1,96 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .range {
+    // --_fill: thumb color (overridden by semantic variants)
+    --_fill: var(--nv-fill-link);
+
+    appearance:  none;
+    background:  transparent;
+    cursor:      pointer;
+    display:     block;
+    height:      c.$input-height;
+    margin:      0;
+    outline:     none;
+    padding:     0;
+    width:       100%;
+
+    // ── Webkit Track ─────────────────────────────────────────────────────────
+    &::-webkit-slider-runnable-track {
+      height:         c.$progress-height;
+      border-radius:  c.$progress-radius;
+      border:         none;
+      @include t.theme("background-color", "control-bg");
+    }
+
+    // ── Webkit Thumb ─────────────────────────────────────────────────────────
+    &::-webkit-slider-thumb {
+      appearance:     none;
+      width:          c.$range-thumb-size;
+      height:         c.$range-thumb-size;
+      border-radius:  c.$radius-pill;
+      border:         none;
+      background:     var(--_fill);
+      // Center thumb vertically over the borderless track
+      margin-top: calc((#{c.$progress-height} - #{c.$range-thumb-size}) / 2);
+    }
+
+    // ── Firefox Track ────────────────────────────────────────────────────────
+    &::-moz-range-track {
+      height:         c.$progress-height;
+      border-radius:  c.$progress-radius;
+      border:         none;
+      @include t.theme("background-color", "control-bg");
+    }
+
+    // ── Firefox Thumb ────────────────────────────────────────────────────────
+    &::-moz-range-thumb {
+      appearance:     none;
+      width:          c.$range-thumb-size;
+      height:         c.$range-thumb-size;
+      border-radius:  c.$radius-pill;
+      border:         none;
+      background:     var(--_fill);
+    }
+
+    // ── Focus ────────────────────────────────────────────────────────────────
+    &:focus-visible {
+      &::-webkit-slider-thumb {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-focus-ring) #{c.$focus-ring-opacity}, transparent);
+      }
+      &::-moz-range-thumb {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-focus-ring) #{c.$focus-ring-opacity}, transparent);
+      }
+    }
+
+    // ── Disabled ─────────────────────────────────────────────────────────────
+    &:disabled,
+    fieldset[disabled] & {
+      cursor:   not-allowed;
+      opacity:  0.7;
+    }
+
+    // ── Size Modifiers ───────────────────────────────────────────────────────
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+
+    // ── Semantic Variants ────────────────────────────────────────────────────
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        --_fill: var(--nv-fill-#{$name});
+
+        &:focus-visible {
+          &::-webkit-slider-thumb {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-#{$name}) #{c.$focus-ring-opacity}, transparent);
+          }
+          &::-moz-range-thumb {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-#{$name}) #{c.$focus-ring-opacity}, transparent);
+          }
+        }
+      }
+    }
+  }
+}

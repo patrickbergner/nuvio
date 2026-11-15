@@ -1,0 +1,295 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("reset") {
+  html {
+    @include t.theme("background-color", "bg");
+    font-size:                c.$font-size-base;
+    min-width:                300px;
+    overflow-x:               hidden;
+    overflow-y:               scroll;
+    scrollbar-gutter:         stable;
+    text-size-adjust:         100%;
+    -webkit-text-size-adjust: 100%;
+    tab-size:                 4;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    @include t.theme("background-color", "bg");
+    @include t.theme("color", "text");
+    font-family:             c.$font-family-sans;
+    font-size:               c.$font-size-base;
+    font-weight:             c.$font-weight-normal;
+    line-height:             c.$line-height-base;
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body,
+  p,
+  ol,
+  ul,
+  li,
+  dl,
+  dt,
+  dd,
+  blockquote,
+  figure,
+  fieldset,
+  legend,
+  textarea,
+  pre,
+  iframe,
+  hr,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 { margin: 0; }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size:   100%;
+    font-weight: normal;
+    text-wrap:   balance;
+  }
+
+  a {
+    @include t.theme("color", "ink-link");
+    cursor:              pointer;
+    text-decoration:     none;
+    transition-duration: c.$duration;
+    transition-property: background-color, border-color, color;
+
+    strong {
+      color: currentColor;
+    }
+
+    @include u.on-hover {
+      @include t.theme("color", "fill-link-hover");
+    }
+
+    &:active {
+      @include t.theme("color", "fill-link-active");
+    }
+
+    &:focus-visible {
+      outline: 2px solid;
+      @include t.theme("outline-color", "focus-ring");
+      outline-offset: 2px;
+    }
+  }
+
+  // Default: lists are naked – no markers, no indentation, no padding/margin.
+  // Use .is-list to opt into prose styling.
+  ul,
+  ol {
+    list-style: none;
+    padding:    0;
+  }
+
+  ul.is-list {
+    padding-inline-start: c.$ul-list-indent;
+
+    > li {
+      position: relative;
+
+      &::before {
+        content:             "–";
+        position:            absolute;
+        inset-inline-start:  -#{c.$ul-list-indent};
+        width:               c.$ul-list-indent;
+      }
+    }
+  }
+
+  ol.is-list {
+    padding-inline-start:  c.$ol-list-indent;
+    counter-reset:         nvol;
+
+    > li {
+      position:          relative;
+      counter-increment: nvol;
+
+      &::before {
+        content:             counter(nvol) ".";
+        position:            absolute;
+        inset-inline-start:  -#{c.$ol-list-indent};
+        width:               c.$ol-list-indent;
+      }
+    }
+
+    &.is-short {
+      padding-inline-start: c.$ul-list-indent;
+
+      > li::before {
+        inset-inline-start:  -#{c.$ul-list-indent};
+        width:               c.$ul-list-indent;
+      }
+    }
+  }
+
+  ol.is-list ol.is-list > li::before {
+    content: counter(nvol, lower-alpha) ".";
+  }
+
+  ol.is-list ol.is-list ol.is-list > li::before {
+    content: counter(nvol, lower-roman) ".";
+  }
+
+  img, picture, video, canvas, svg {
+    display:   block;
+    max-width: 100%;
+    height:    auto;
+  }
+
+  button, input, select, textarea { font: inherit; margin: 0; }
+
+  button {
+    appearance:          none;
+    background:          none;
+    border:              none;
+    color:               inherit;
+    cursor:              pointer;
+    margin:              0;
+    padding:             0;
+    transition-duration: c.$duration;
+    transition-property: background-color, border-color, color;
+
+    &:focus-visible {
+      outline: 2px solid;
+      @include t.theme("outline-color", "focus-ring");
+      outline-offset: 2px;
+    }
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family:             c.$font-family-mono;
+    -moz-osx-font-smoothing: auto;
+    -webkit-font-smoothing:  auto;
+  }
+
+  code {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("color", "text-highlight");
+    @include t.theme("border-color", "border");
+    border-width:  1px;
+    border-style:  solid;
+    border-radius: c.$radius-sm;
+    font-size:     c.$font-size-sm;
+    padding:       0.125em 0.375em;
+  }
+
+  pre {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("color", "text");
+    @include t.theme("border-color", "border");
+    border-width:   1px;
+    border-style:   solid;
+    border-radius:  c.$radius;
+    font-size:      c.$font-size-sm;
+    line-height:    c.$line-height-base;
+    overflow-x:     auto;
+    padding:        1.25rem 1.5rem;
+    white-space:    pre;
+    overflow-wrap:  normal;
+
+    code {
+      background: none;
+      border:     none;
+      color:      inherit;
+      font-size:  1em;
+      padding:    0;
+    }
+  }
+
+  hr {
+    @include t.theme("background-color", "border");
+    border:  none;
+    display: block;
+    height:  1px;
+    margin:  1.5rem 0;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    vertical-align: baseline;
+  }
+
+  small {
+    font-size: c.$font-size-sm;
+  }
+
+  span {
+    font-style:  inherit;
+    font-weight: inherit;
+  }
+
+  strong,
+  b {
+    @include t.theme("color", "text-highlight");
+    font-weight: c.$font-weight-bold;
+  }
+
+  fieldset {
+    border:  none;
+    padding: 0;
+  }
+
+  :target {
+    scroll-margin-block: 5ex;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing:  0;
+    width:           100%;
+
+    td,
+    th {
+      vertical-align: top;
+
+      &:not([align]) {
+        text-align: inherit;
+      }
+    }
+
+    th {
+      @include t.theme("color", "text-highlight");
+    }
+  }
+
+  abbr[title] { text-decoration: underline dotted; cursor: help; }
+  address { font-style: normal; }
+
+  @keyframes spinAround {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(359deg);
+    }
+  }
+}

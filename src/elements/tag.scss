@@ -1,0 +1,88 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .tag {
+    display:          inline-flex;
+    align-items:      center;
+    justify-content:  center;
+    white-space:      nowrap;
+    user-select:      none;
+    cursor:           default;
+    padding-block:    calc(0.25em - #{c.$control-label-y-compensation}) calc(0.25em + #{c.$control-label-y-compensation});
+    padding-inline:   c.$tag-padding-x;
+    font-size:        c.$font-size-xs;
+    font-weight:      c.$font-weight-medium;
+    line-height:      1.5;
+    border-radius:    c.$tag-radius;
+
+    @include t.theme("background-color", "surface-3");
+    @include t.theme("color",            "control-text");
+    border-color: transparent;
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        @include t.fill($name);
+      }
+
+      &.is-#{$name}.is-light {
+        @include t.theme("background-color", "tint-light-#{$name}");
+        @include t.theme("color",            "tint-light-text-#{$name}");
+      }
+
+      &.is-#{$name}.is-dark {
+        @include t.theme("background-color", "tint-dark-#{$name}");
+        @include t.theme("color",            "tint-dark-text-#{$name}");
+      }
+    }
+
+    &.is-normal { font-size: c.$font-size-xs; }
+    &.is-medium { font-size: c.$font-size-sm; }
+    &.is-large  { font-size: c.$font-size-base; }
+
+    &.is-pill { border-radius: c.$radius-pill; }
+
+    .icon {
+      font-size:            inherit;
+      height:               1.5em;
+      width:                1.5em;
+      margin-inline-start:  -0.25em;
+      margin-inline-end:    0.25em;
+    }
+
+    &.has-icon-trailing .icon:last-child {
+      margin-inline-start:  0.25em;
+      margin-inline-end:    -0.25em;
+    }
+
+    &.is-pill .icon {
+      margin-inline-start: -0.35em;
+    }
+
+    &.is-pill.has-icon-trailing .icon:last-child {
+      margin-inline-end: -0.35em;
+    }
+  }
+
+  .tags {
+    display:      inline-flex;
+    align-items:  stretch;
+
+    .tag {
+      &:not(:first-child):not(:last-child) {
+        border-radius: 0;
+      }
+
+      &:first-child:not(:only-child) {
+        border-start-end-radius:  0;
+        border-end-end-radius:    0;
+      }
+
+      &:last-child:not(:only-child) {
+        border-start-start-radius:  0;
+        border-end-start-radius:    0;
+      }
+    }
+  }
+}

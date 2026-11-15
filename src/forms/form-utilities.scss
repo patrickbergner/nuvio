@@ -1,0 +1,109 @@
+@use "sass:map";
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+
+// Base mixin for .input, .textarea, .select select
+@mixin control {
+  @include t.theme("background-color", "control-bg");
+  @include t.theme("border-color",     "control-border");
+  @include t.theme("color",            "text-highlight");
+  appearance:       none;
+  border-radius:    c.$input-radius;
+  border-style:     solid;
+  border-width:     c.$input-border-width;
+  box-shadow:       none;
+  display:          inline-flex;
+  font-family:      inherit;
+  font-size:        c.$input-font-size;
+  height:           c.$input-height;
+  justify-content:  flex-start;
+  line-height:      c.$input-line-height;
+  padding-block:    c.$input-padding-y;
+  padding-inline:   c.$input-padding-x;
+  position:         relative;
+  transition:       background-color c.$duration c.$easing,
+                    border-color     c.$duration c.$easing,
+                    box-shadow       c.$duration c.$easing,
+                    color            c.$duration c.$easing;
+  vertical-align:  top;
+  width:           100%;
+
+  @include u.placeholder {
+    @include t.theme("color", "text-muted");
+  }
+
+  @include u.on-hover {
+    @include t.theme("background-color", "control-hover");
+  }
+  &.is-hover {
+    @include t.theme("background-color", "control-hover");
+  }
+
+  &:focus, &:focus-within, &.is-focused {
+    @include t.theme("border-color", "ink-link");
+    outline:     none;
+    box-shadow:  0 0 0 3px color-mix(in srgb, var(--nv-focus-ring) #{c.$focus-ring-opacity}, transparent);
+  }
+
+  &:active, &.is-active {
+    @include t.theme("border-color", "ink-link");
+  }
+
+  // Native validation feedback. Same specificity as the :focus rule above, so it
+  // has to come after it to win – and before the .is-#{$name} loop below, so an
+  // explicit color modifier still wins over it.
+  @if c.$form-validation-styling {
+    @if map.has-key(c.$semantic-colors, "danger") {
+      &:user-invalid {
+        @include t.theme("border-color", "fill-danger");
+
+        &:focus, &:focus-within {
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-danger) #{c.$focus-ring-opacity}, transparent);
+        }
+      }
+    }
+
+    @if map.has-key(c.$semantic-colors, "success") {
+      &:user-valid {
+        @include t.theme("border-color", "fill-success");
+
+        &:focus, &:focus-within {
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-success) #{c.$focus-ring-opacity}, transparent);
+        }
+      }
+    }
+  }
+
+  &[disabled], fieldset[disabled] & {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("color",            "text-muted");
+    cursor:   not-allowed;
+    opacity:  0.7;
+
+    @include u.placeholder {
+      @include t.theme("color", "text-muted");
+    }
+  }
+
+  @each $name, $_ in c.$semantic-colors {
+    &.is-#{$name} {
+      @include t.theme("background-color", "tint-#{$name}");
+      @include t.theme("border-color",     "fill-#{$name}");
+      @include t.theme("color",            "tint-text-#{$name}");
+      @include u.placeholder {
+        @include t.theme("color", "tint-text-#{$name}");
+      }
+      @include u.on-hover {
+        @include t.theme("border-color", "fill-#{$name}-hover");
+      }
+      &.is-hover {
+        @include t.theme("border-color", "fill-#{$name}-hover");
+      }
+      &:active, &.is-active {
+        @include t.theme("border-color", "fill-#{$name}-active");
+      }
+      &:focus, &.is-focused { box-shadow: 0 0 0 3px color-mix(in srgb, var(--nv-fill-#{$name}) #{c.$focus-ring-opacity}, transparent); }
+    }
+  }
+}

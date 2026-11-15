@@ -1,0 +1,53 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .notification {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("color", "text");
+    border-radius:  c.$radius;
+    padding:        1.375em 1.5em;
+    position:       relative;
+
+    a:not(.button):not(.dropdown-item) {
+      color: currentColor;
+    }
+
+    strong {
+      color: currentColor;
+    }
+
+    code,
+    pre {
+      @include t.theme("background-color", "surface-1");
+    }
+
+    pre code {
+      background: transparent;
+    }
+
+    .title,
+    .subtitle,
+    .content {
+      color: currentColor;
+    }
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} {
+        @include t.theme("background-color", "fill-#{$name}");
+        @include t.theme("color", "fill-text-#{$name}");
+      }
+
+      &.is-#{$name}.is-light {
+        @include t.theme("background-color", "tint-light-#{$name}");
+        @include t.theme("color", "tint-light-text-#{$name}");
+      }
+
+      &.is-#{$name}.is-dark {
+        @include t.theme("background-color", "tint-dark-#{$name}");
+        @include t.theme("color", "tint-dark-text-#{$name}");
+      }
+    }
+  }
+}

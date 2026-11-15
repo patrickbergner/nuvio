@@ -1,0 +1,204 @@
+@use "../config" as c;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+$flex-direction-values: (
+  "row",
+  "row-reverse",
+  "column",
+  "column-reverse",
+);
+
+// Each family emits all its base classes before its -mobile ones: both are
+// !important at equal specificity, so a -mobile class must come later to win.
+@include l.layer("utilities") {
+  @each $value in $flex-direction-values {
+    .has-direction-#{$value} {
+      flex-direction: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $value in $flex-direction-values {
+      .has-direction-#{$value}-mobile {
+        flex-direction: #{$value} !important;
+      }
+    }
+  }
+
+  $flex-wrap-values: (
+    "not-wrapped":      "nowrap",
+    "wrapped":          "wrap",
+    "wrapped-reverse":  "wrap-reverse",
+  );
+
+  @each $class, $value in $flex-wrap-values {
+    .is-#{$class} {
+      flex-wrap: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $class, $value in $flex-wrap-values {
+      .is-#{$class}-mobile {
+        flex-wrap: #{$value} !important;
+      }
+    }
+  }
+
+  $justify-content-values: (
+    "flex-start",
+    "flex-end",
+    "center",
+    "space-between",
+    "space-around",
+    "space-evenly",
+    "start",
+    "end",
+    "left",
+    "right",
+  );
+
+  @each $value in $justify-content-values {
+    .has-justify-content-#{$value} {
+      justify-content: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $value in $justify-content-values {
+      .has-justify-content-#{$value}-mobile {
+        justify-content: #{$value} !important;
+      }
+    }
+  }
+
+  $align-content-values: (
+    "flex-start",
+    "flex-end",
+    "center",
+    "space-between",
+    "space-around",
+    "space-evenly",
+    "stretch",
+    "start",
+    "end",
+    "baseline",
+  );
+
+  @each $value in $align-content-values {
+    .has-align-content-#{$value} {
+      align-content: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $value in $align-content-values {
+      .has-align-content-#{$value}-mobile {
+        align-content: #{$value} !important;
+      }
+    }
+  }
+
+  $align-items-values: (
+    "stretch",
+    "flex-start",
+    "flex-end",
+    "center",
+    "baseline",
+    "start",
+    "end",
+    "self-start",
+    "self-end",
+  );
+
+  @each $value in $align-items-values {
+    .has-align-items-#{$value} {
+      align-items: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $value in $align-items-values {
+      .has-align-items-#{$value}-mobile {
+        align-items: #{$value} !important;
+      }
+    }
+  }
+
+  $align-self-values: (
+    "auto",
+    "flex-start",
+    "flex-end",
+    "center",
+    "baseline",
+    "stretch",
+  );
+
+  @each $value in $align-self-values {
+    .has-align-self-#{$value} {
+      align-self: #{$value} !important;
+    }
+  }
+
+  @include u.bp-below("sm") {
+    @each $value in $align-self-values {
+      .has-align-self-#{$value}-mobile {
+        align-self: #{$value} !important;
+      }
+    }
+  }
+
+  $flex-operators: (
+    "grow",
+    "shrink",
+  );
+
+  @each $value in $flex-operators {
+    @for $i from 0 through 5 {
+      .has-#{$value}-#{$i} {
+        flex-#{$value}: $i !important;
+      }
+    }
+
+    @include u.bp-below("sm") {
+      @for $i from 0 through 5 {
+        .has-#{$value}-#{$i}-mobile {
+          flex-#{$value}: $i !important;
+        }
+      }
+    }
+  }
+
+  $gap-types: (
+    "gap",
+    "column-gap",
+    "row-gap",
+  );
+
+  @each $gap-type in $gap-types {
+    @each $name, $value in c.$spacing-gaps {
+      .has-#{$gap-type}-#{$name} {
+        #{$gap-type}: #{$value} !important;
+      }
+    }
+
+    @include u.bp-below("sm") {
+      @each $name, $value in c.$spacing-gaps {
+        .has-#{$gap-type}-#{$name}-mobile {
+          #{$gap-type}: #{$value} !important;
+        }
+      }
+    }
+  }
+
+  .is-fullheight {
+    height: 100% !important;
+  }
+
+  @include u.bp-below("sm") {
+    .is-fullheight-mobile {
+      height: 100% !important;
+    }
+  }
+}

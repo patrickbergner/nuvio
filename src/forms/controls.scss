@@ -1,0 +1,181 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .label {
+    @include t.theme("color", "text-highlight");
+    display:      block;
+    font-size:    c.$label-font-size;
+    font-weight:  c.$label-font-weight;
+    &:not(:last-child) { margin-bottom: 0.5em; }
+    &.is-small  { font-size: c.$font-size-xs; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} { @include t.theme("color", "ink-#{$name}"); }
+    }
+  }
+
+  .help {
+    @include t.theme("color", "text-muted");
+    display:     block;
+    font-size:   c.$font-size-sm;
+    margin-top:  0.25rem;
+
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name} { @include t.theme("color", "ink-#{$name}"); }
+    }
+  }
+
+  .field {
+    &:not(:last-child) { margin-bottom: 0.75rem; }
+
+    &.has-addons {
+      display:          flex;
+      justify-content:  flex-start;
+
+      .control:not(:last-child) { margin-inline-end: -#{c.$input-border-width}; }
+
+      .control:not(:first-child):not(:last-child) {
+        .button, .input, .select select { border-radius: 0; }
+      }
+      .control:first-child:not(:only-child) {
+        .button, .input, .select select {
+          border-start-end-radius:  0;
+          border-end-end-radius:    0;
+        }
+      }
+      .control:last-child:not(:only-child) {
+        .button, .input, .select select {
+          border-start-start-radius:  0;
+          border-end-start-radius:    0;
+        }
+      }
+
+      .button, .input, .select select {
+        &:not([disabled]) {
+          @include u.on-hover                { z-index: 2; }
+          &.is-hover                         { z-index: 2; }
+          &:focus, &.is-focused, &:active, &.is-active {
+            z-index: 3;
+            @include u.on-hover { z-index: 4; }
+          }
+        }
+      }
+
+      .control.is-expanded { flex-grow: 1; flex-shrink: 1; }
+      &.has-addons-centered { justify-content: center; }
+      &.has-addons-right    { justify-content: flex-end; }
+    }
+
+    &.is-horizontal {
+      @include u.bp-from("sm") { display: flex; }
+    }
+  }
+
+  .field-label {
+    .label { font-size: inherit; }
+
+    @include u.bp-below("sm") { margin-bottom: 0.5rem; }
+
+    @include u.bp-from("sm") {
+      flex-basis:         0;
+      flex-grow:          1;
+      flex-shrink:        0;
+      margin-inline-end:  1.5rem;
+      text-align:         end;
+
+      &.is-small  { font-size: c.$font-size-xs;   padding-top: 0.375em; }
+      &.is-normal {                               padding-top: 0.375em; }
+      &.is-medium { font-size: c.$font-size-lg;   padding-top: 0.375em; }
+      &.is-large  { font-size: c.$font-size-xl;   padding-top: 0.375em; }
+    }
+  }
+
+  .field-body {
+    .field .field { margin-bottom: 0; }
+
+    @include u.bp-from("sm") {
+      display:      flex;
+      flex-basis:   0;
+      flex-grow:    5;
+      flex-shrink:  1;
+
+      .field { margin-bottom: 0; }
+
+      & > .field {
+        flex-shrink: 1;
+        &:not(.is-narrow) { flex-grow: 1; }
+        &:not(:last-child) { margin-inline-end: 0.75rem; }
+      }
+    }
+  }
+
+  .control {
+    box-sizing:  border-box;
+    clear:       both;
+    font-size:   c.$font-size-base;
+    position:    relative;
+    text-align:  inherit;
+
+    &.has-icons-left,
+    &.has-icons-right {
+      .input:focus ~ .icon,
+      .select:focus ~ .icon { @include t.theme("color", "ink-link"); }
+
+      @each $name, $_ in c.$semantic-colors {
+        .input.is-#{$name} ~ .icon,
+        .select.is-#{$name} ~ .icon { @include t.theme("color", "tint-text-#{$name}"); }
+      }
+
+      .icon {
+        @include t.theme("color", "text-muted");
+        font-size:        inherit;
+        height:           c.$input-height;
+        pointer-events:   none;
+        position:         absolute;
+        top:              0;
+        width:            c.$input-height;
+        z-index:          4;
+        display:          inline-flex;
+        align-items:      center;
+        justify-content:  center;
+      }
+    }
+
+    &.has-icons-left {
+      .input, .select select { padding-left: c.$input-height; }
+      .icon.is-left { left: 0; }
+    }
+
+    &.has-icons-right {
+      .input, .select select { padding-right: c.$input-height; }
+      .icon.is-right { right: 0; }
+    }
+
+    // The icon box and the loader size off the control, not off the input – mirror
+    // the input's size modifier here so both follow a sized field.
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+
+    &.is-loading {
+      &::after {
+        @include u.loader;
+        @include t.theme("border-color", "control-text");
+        border-right-color:  transparent;
+        border-top-color:    transparent;
+        inset-inline-end:    0.75em;
+        position:            absolute !important;
+        top:                 0.75em;
+        z-index:             4;
+      }
+      &.is-small::after  { font-size: c.$font-size-sm; }
+      &.is-medium::after { font-size: c.$font-size-lg; }
+      &.is-large::after  { font-size: c.$font-size-xl; }
+    }
+  }
+}

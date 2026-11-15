@@ -1,0 +1,149 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .dropdown {
+    anchor-scope:    --nv-dropdown;
+    display:         inline-flex;
+    position:        relative;
+    vertical-align:  top;
+
+    @media (hover: hover) and (pointer: fine) {
+      &.is-hover:hover {
+        .dropdown-menu { display: block; }
+      }
+    }
+
+    // Flow-relative like the flex-based .is-right modifiers elsewhere: under
+    // `dir="rtl"` this pins the menu to the trailing (left) edge.
+    &.is-right .dropdown-menu {
+      inset-inline-start:  auto;
+      inset-inline-end:    0;
+    }
+
+    &.is-up .dropdown-menu {
+      bottom:          100%;
+      padding-bottom:  0.25rem;
+      padding-top:     initial;
+      top:             auto;
+    }
+  }
+
+  .dropdown-trigger {
+    cursor: pointer;
+  }
+
+  .dropdown-menu {
+    display:             none;
+    inset-inline-start:  0;
+    min-width:           12rem;
+    padding-top:         0.25rem;
+    position:            absolute;
+    top:                 100%;
+    z-index:             20;
+  }
+
+  .dropdown-content {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("border-color", "border");
+    border-width:    c.$dropdown-border-width;
+    border-style:    solid;
+    border-radius:   c.$radius;
+    padding-bottom:  0.5rem;
+    padding-top:     0.5rem;
+  }
+
+  .dropdown-item {
+    @include t.theme("color", "text");
+    display:      block;
+    font-size:    c.$font-size-sm;
+    line-height:  1.5;
+    padding:      0.375rem 1rem;
+  }
+
+  a.dropdown-item,
+  button.dropdown-item {
+    @include t.theme("background-color", "surface-1");
+    padding-inline-end:  3rem;
+    text-align:          inherit;
+    white-space:         nowrap;
+    width:               100%;
+    cursor:              pointer;
+    appearance:          none;
+    border:              none;
+    color:               inherit;
+    font-family:         inherit;
+    font-size:           inherit;
+    margin:              0;
+
+    @include u.on-hover {
+      @include t.theme("background-color", "control-hover");
+    }
+
+    // The base outline alone is easy to miss on a dense menu – tint the row too.
+    &:focus-visible {
+      @include t.theme("background-color", "control-hover");
+    }
+
+    &.is-active,
+    &.is-selected {
+      @include t.theme("background-color", "fill-link");
+      @include t.theme("color", "fill-text-link");
+    }
+  }
+
+  .dropdown-divider {
+    @include t.theme("background-color", "border");
+    border:   none;
+    display:  block;
+    height:   c.$dropdown-border-width;
+    margin:   0.5rem 0;
+  }
+
+  // ── Click-to-Open: [popover] ──────────────────────────────────────────────
+  // A shown popover moves to the top layer, where nesting no longer positions it
+  // against its trigger – hence the anchor positioning below. `anchor-scope` on
+  // `.dropdown` stops the shared anchor name from leaking between dropdowns on
+  // the same page.
+
+  .dropdown-trigger {
+    anchor-name: --nv-dropdown;
+  }
+
+  // `justify-self` decides which edge of the position-area the menu sits on;
+  // without it a fit-content popover lands on the area's start edge, which for
+  // the trailing-aligned variant is the far side of the viewport.
+  .dropdown-menu[popover] {
+    background:              transparent;
+    border:                  0;
+    color:                   inherit;
+    inset:                   auto; // undo the UA's inset: 0 / margin: auto centering
+    justify-self:            start;
+    margin:                  0;
+    overflow:                visible;
+    position:                absolute;
+    position-anchor:         --nv-dropdown;
+    position-area:           block-end span-inline-end;
+    position-try-fallbacks:  flip-block;
+
+    &:popover-open { display: block; }
+  }
+
+  // Both variants repeat `inset: auto`: the physical offsets from the .is-right
+  // and .is-up rules above are more specific than the [popover] block and would
+  // otherwise fight the anchor.
+  .dropdown.is-right .dropdown-menu[popover] {
+    inset:          auto;
+    justify-self:   end;
+    position-area:  block-end span-inline-start;
+  }
+
+  .dropdown.is-up .dropdown-menu[popover] {
+    inset:           auto;
+    padding-bottom:  0.25rem;
+    padding-top:     0;
+    position-area:   block-start span-inline-end;
+  }
+}

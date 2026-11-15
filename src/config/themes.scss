@@ -1,0 +1,308 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+@use "." as c;
+// Loaded here, first of all emitting modules, so the @layer order statement is
+// emitted ahead of any layered rule.
+@use "layers" as l;
+
+// ── Public: theme() Mixin ────────────────────────────────────────────────────
+//
+//   .my-element {
+//     @include t.theme("color", "text");
+//     @include t.theme("background-color", "surface-1");
+//   }
+
+@mixin theme($prop, $key, $important: false) {
+  @if $important {
+    #{$prop}: var(--nv-#{$key}) !important;
+  } @else {
+    #{$prop}: var(--nv-#{$key});
+  }
+}
+
+// ── Public: fill() Mixin ─────────────────────────────────────────────────────
+//
+//   .my-element {
+//     @include t.fill("primary");
+//   }
+
+@mixin fill($name) {
+  @include theme("background-color", "fill-#{$name}");
+  @include theme("border-color",     "fill-#{$name}");
+  @include theme("color",            "fill-text-#{$name}");
+}
+
+// ── Per-Token Override Helper ────────────────────────────────────────────────
+// A semantic-color entry may carry optional override sub-maps (hover, active,
+// ink, tint-*) to skip derivation and emit verbatim values. Returns null when
+// no override is present – caller falls back to derivation.
+
+@function _override($entry, $token, $theme) {
+  $sub: map.get($entry, $token);
+  @if $sub != null and meta.type-of($sub) == "map" {
+    @return map.get($sub, $theme);
+  }
+  @return null;
+}
+
+// ── Semantic Color Token Tables ──────────────────────────────────────────────
+// Each color produces 9 tokens per theme:
+//   fill-{N}              exact solid surface color
+//   fill-{N}-hover        fill darkened by $hover-lightness-offset (override: hover)
+//   fill-{N}-active       fill darkened by $active-lightness-offset (override: active)
+//   fill-text-{N}         foreground text on solid surface
+//   ink-{N}               foreground text on background (override: ink)
+//   tint-light-{N}        pale wash (override: tint-light)
+//   tint-light-text-{N}   text on pale wash (override: tint-light-text)
+//   tint-dark-{N}         dark wash (override: tint-dark)
+//   tint-dark-text-{N}    text on dark wash (override: tint-dark-text)
+
+$_sem-light: ();
+$_sem-dark:  ();
+
+@each $name, $entry in c.$semantic-colors {
+  $lc: map.get($entry, "light");
+  $dc: map.get($entry, "dark");
+  $lt: map.get($entry, "text-light");
+  $dt: map.get($entry, "text-dark");
+
+  $lc-hover: _override($entry, "hover", "light");
+  @if $lc-hover == null { $lc-hover: color.adjust($lc, $lightness: -(c.$hover-lightness-offset)); }
+  $dc-hover: _override($entry, "hover", "dark");
+  @if $dc-hover == null { $dc-hover: color.adjust($dc, $lightness: -(c.$hover-lightness-offset)); }
+
+  $lc-active: _override($entry, "active", "light");
+  @if $lc-active == null { $lc-active: color.adjust($lc, $lightness: -(c.$active-lightness-offset)); }
+  $dc-active: _override($entry, "active", "dark");
+  @if $dc-active == null { $dc-active: color.adjust($dc, $lightness: -(c.$active-lightness-offset)); }
+
+  $lc-color: _override($entry, "ink", "light");
+  @if $lc-color == null {
+    $lc-color: $lc;
+    $ll: color.channel($lc, "lightness", $space: hsl);
+    @if $ll > c.$outline-light-max-lightness {
+      $lc-color: color.change($lc, $lightness: c.$outline-light-max-lightness);
+    }
+  }
+
+  $dc-color: _override($entry, "ink", "dark");
+  @if $dc-color == null {
+    $dc-color: $dc;
+    $dl: color.channel($dc, "lightness", $space: hsl);
+    @if $dl < c.$outline-dark-min-lightness {
+      $dc-color: color.change($dc, $lightness: c.$outline-dark-min-lightness);
+    }
+  }
+
+  $lc-tint-light: _override($entry, "tint-light", "light");
+  @if $lc-tint-light == null { $lc-tint-light: color.mix($lc, c.$light-surface-1, c.$tint-light-weight-light); }
+  $dc-tint-light: _override($entry, "tint-light", "dark");
+  @if $dc-tint-light == null { $dc-tint-light: color.mix($dc, c.$light-bg, c.$tint-light-weight-dark); }
+
+  $lc-tint-light-text: _override($entry, "tint-light-text", "light");
+  @if $lc-tint-light-text == null { $lc-tint-light-text: color.mix($lc-color, c.$light-text, c.$tint-light-text-weight-light); }
+  $_dco-tint-light-text: _override($entry, "tint-light-text", "dark");
+  $dc-tint-light-text: $_dco-tint-light-text;
+  @if $dc-tint-light-text == null { $dc-tint-light-text: color.mix($dc-color, c.$dark-text, c.$tint-light-text-weight-dark); }
+
+  // Dark-block emission of tint-light-text-{N}: framework default reuses the
+  // light-computed value (theme-invariant text on pale wash). An explicit dark
+  // override takes precedence.
+  $_dark-emit-tint-light-text: $lc-tint-light-text;
+  @if $_dco-tint-light-text != null { $_dark-emit-tint-light-text: $_dco-tint-light-text; }
+
+  $lc-tint-dark: _override($entry, "tint-dark", "light");
+  @if $lc-tint-dark == null { $lc-tint-dark: color.mix($lc, #000, c.$tint-dark-weight-light); }
+  $dc-tint-dark: _override($entry, "tint-dark", "dark");
+  @if $dc-tint-dark == null { $dc-tint-dark: color.mix($dc, c.$dark-bg, c.$tint-dark-weight-dark); }
+
+  $lc-tint-dark-text: _override($entry, "tint-dark-text", "light");
+  @if $lc-tint-dark-text == null { $lc-tint-dark-text: c.$light-bg; }
+  $dc-tint-dark-text: _override($entry, "tint-dark-text", "dark");
+  @if $dc-tint-dark-text == null { $dc-tint-dark-text: $dc-tint-light-text; }
+
+  $_sem-light: map.merge($_sem-light, (
+    "fill-#{$name}":             $lc,
+    "fill-#{$name}-hover":       $lc-hover,
+    "fill-#{$name}-active":      $lc-active,
+    "fill-text-#{$name}":        $lt,
+    "ink-#{$name}":              $lc-color,
+    "tint-light-#{$name}":       $lc-tint-light,
+    "tint-light-text-#{$name}":  $lc-tint-light-text,
+    "tint-dark-#{$name}":        $lc-tint-dark,
+    "tint-dark-text-#{$name}":   $lc-tint-dark-text,
+    "tint-#{$name}":             $lc-tint-light,
+    "tint-text-#{$name}":        $lc-tint-light-text,
+  ));
+
+  $_sem-dark: map.merge($_sem-dark, (
+    "fill-#{$name}":             $dc,
+    "fill-#{$name}-hover":       $dc-hover,
+    "fill-#{$name}-active":      $dc-active,
+    "fill-text-#{$name}":        $dt,
+    "ink-#{$name}":              $dc-color,
+    "tint-light-#{$name}":       $dc-tint-light,
+    "tint-light-text-#{$name}":  $_dark-emit-tint-light-text,
+    "tint-dark-#{$name}":        $dc-tint-dark,
+    "tint-dark-text-#{$name}":   $dc-tint-dark-text,
+    "tint-#{$name}":             $dc-tint-dark,
+    "tint-text-#{$name}":        $dc-tint-light-text,
+  ));
+}
+
+// ── Token Maps ───────────────────────────────────────────────────────────────
+
+$_light: map.merge((
+  "bg":              c.$light-bg,
+  "surface-1":       c.$light-surface-1,
+  "surface-2":       c.$light-surface-2,
+  "surface-3":       c.$light-surface-3,
+  "surface-4":       c.$light-surface-4,
+  "surface-1-hover": c.$light-surface-1-hover,
+  "surface-2-hover": c.$light-surface-2-hover,
+  "surface-3-hover": c.$light-surface-3-hover,
+  "surface-4-hover": c.$light-surface-4-hover,
+  "border":          c.$light-border,
+  "text":            c.$light-text,
+  "text-muted":      c.$light-text-muted,
+  "text-highlight":  c.$light-text-highlight,
+  "control-bg":      c.$light-control-bg,
+  "control-border":  c.$light-control-border,
+  "control-text":    c.$light-control-text,
+  "control-hover":   c.$light-control-hover,
+  "focus-ring":      c.$focus-ring-color-light,
+), $_sem-light);
+
+$_dark: map.merge((
+  "bg":              c.$dark-bg,
+  "surface-1":       c.$dark-surface-1,
+  "surface-2":       c.$dark-surface-2,
+  "surface-3":       c.$dark-surface-3,
+  "surface-4":       c.$dark-surface-4,
+  "surface-1-hover": c.$dark-surface-1-hover,
+  "surface-2-hover": c.$dark-surface-2-hover,
+  "surface-3-hover": c.$dark-surface-3-hover,
+  "surface-4-hover": c.$dark-surface-4-hover,
+  "border":          c.$dark-border,
+  "text":            c.$dark-text,
+  "text-muted":      c.$dark-text-muted,
+  "text-highlight":  c.$dark-text-highlight,
+  "control-bg":      c.$dark-control-bg,
+  "control-border":  c.$dark-control-border,
+  "control-text":    c.$dark-control-text,
+  "control-hover":   c.$dark-control-hover,
+  "focus-ring":      c.$focus-ring-color-dark,
+), $_sem-dark);
+
+// ── Hex Color Output ─────────────────────────────────────────────────────────
+// Converts any Sass color to its shortest #rrggbb / #rgb hex form, rounding
+// each RGB channel once at emit time.
+//
+// The color is clipped into the sRGB gamut first. Since Sass 1.79,
+// color.adjust() no longer clamps HSL lightness, so a derivation that runs past
+// either end – e.g. the text-highlight of $light-text: #000 (lightness -9%) or
+// of $dark-text: #fff (lightness +9%) – yields channels below 0 or above 255.
+// Unclipped, a negative channel made string.slice() index from the end of the
+// digit string and turned pure black into #f8fafa.
+
+@function _hex-digit($n) {
+  @return string.slice("0123456789abcdef", $n + 1, $n + 1);
+}
+
+@function _hex-byte($n) {
+  @return _hex-digit(math.floor(math.div($n, 16))) + _hex-digit($n % 16);
+}
+
+@function _hex($c) {
+  $c: color.to-gamut($c, $space: srgb, $method: clip);
+  $r: math.round(color.channel($c, "red",   $space: srgb) * 255);
+  $g: math.round(color.channel($c, "green", $space: srgb) * 255);
+  $b: math.round(color.channel($c, "blue",  $space: srgb) * 255);
+  // #rgb shorthand when each byte is a repeated-nibble (divisible by 17)
+  @if $r % 17 == 0 and $g % 17 == 0 and $b % 17 == 0 {
+    @return string.unquote("#" +
+      _hex-digit(math.floor(math.div($r, 17))) +
+      _hex-digit(math.floor(math.div($g, 17))) +
+      _hex-digit(math.floor(math.div($b, 17))));
+  }
+  @return string.unquote("#" + _hex-byte($r) + _hex-byte($g) + _hex-byte($b));
+}
+
+// ── Internal Helpers ─────────────────────────────────────────────────────────
+
+@function _light($key) {
+  $v: map.get($_light, $key);
+  @if $v == null { @error "nuvio: unknown theme token '#{$key}'"; }
+  @return $v;
+}
+
+@function _dark($key) {
+  $v: map.get($_dark, $key);
+  @if $v == null { @error "nuvio: unknown theme token '#{$key}'"; }
+  @return $v;
+}
+
+@mixin _emit-vars($map) {
+  @each $key, $val in $map {
+    @if meta.type-of($val) == "color" {
+      --nv-#{$key}: #{_hex($val)};
+    } @else {
+      --nv-#{$key}: #{$val};
+    }
+  }
+}
+
+// ── CSS Property Emission ────────────────────────────────────────────────────
+
+@include l.layer("tokens") {
+  @if c.$output-mode == "light" {
+    :root {
+      color-scheme: light;
+      @include _emit-vars($_light);
+    }
+  }
+
+  @else if c.$output-mode == "dark" {
+    :root {
+      color-scheme: dark;
+      @include _emit-vars($_dark);
+    }
+  }
+
+  @else if c.$output-mode == "prefer" {
+    :root {
+      color-scheme: light dark;
+      @include _emit-vars($_light);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { @include _emit-vars($_dark); }
+    }
+  }
+
+  @else {
+    :root {
+      color-scheme: light dark;
+      @include _emit-vars($_light);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { @include _emit-vars($_dark); }
+    }
+    // The `:has()` selectors let a checked control anywhere on the page switch
+    // the theme with no JavaScript – a radio group with `.theme-light` /
+    // `.theme-dark` on two of its inputs, and a third, unclassed input for
+    // "follow the system". The classes cost nothing when unused.
+    html.is-light,
+    html:has(.theme-light:checked) {
+      color-scheme: light;
+      @include _emit-vars($_light);
+    }
+    html.is-dark,
+    html:has(.theme-dark:checked) {
+      color-scheme: dark;
+      @include _emit-vars($_dark);
+    }
+  }
+}

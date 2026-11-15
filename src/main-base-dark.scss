@@ -1,0 +1,4 @@
+// Compile mode: dark mode only (base feature set)
+
+@use "config-base" with ($output-mode: "dark");
+@use "includes-base";

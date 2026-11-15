@@ -1,0 +1,38 @@
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .checkbox,
+  .radio {
+    cursor:       pointer;
+    display:      inline-flex;
+    align-items:  center;
+    gap:          c.$checkbox-gap;
+    line-height:  c.$line-height-base;
+    position:     relative;
+
+    input {
+      cursor:       pointer;
+      width:        c.$checkbox-size;
+      height:       c.$checkbox-size;
+      flex-shrink:  0;
+
+      // Native rendering is kept, but the ring follows the framework's focus token
+      // so it matches .toggle / .range / .button.
+      &:focus-visible {
+        outline:         2px solid;
+        outline-offset:  2px;
+        @include t.theme("outline-color", "focus-ring");
+      }
+    }
+
+    &[disabled],
+    fieldset[disabled] &,
+    input[disabled] {
+      @include t.theme("color", "text-muted");
+      cursor:   not-allowed;
+      opacity:  0.7;
+    }
+  }
+}

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" class="is-dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nuvio – sidebar-nav</title>
+    <link rel="stylesheet" href="../../dist/nuvio.css" />
+    <link rel="stylesheet" href="sidebar-nav.css" />
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+</head>
+
+<body>
+    <div class="sidebar-layout">
+        <aside class="sidebar">
+            <div class="sidebar-head">
+                <a class="sidebar-brand has-text-highlight has-weight-bold" href="#">
+                    <span class="sidebar-when-expanded">Nuvio</span>
+                    <span class="sidebar-when-collapsed">N</span>
+                </a>
+                <button type="button" class="sidebar-burger" popovertarget="sidebar-body" aria-label="Toggle navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div class="sidebar-body" id="sidebar-body" popover>
+                <nav class="sidebar-nav" aria-label="Main navigation">
+                    <a class="sidebar-item is-active" href="#"><span class="icon"><i class="icon-gauge"></i></span> <span class="sidebar-label">Overview</span></a>
+                    <a class="sidebar-item" href="#"><span class="icon"><i class="icon-activity"></i></span> <span class="sidebar-label">Things</span> <span class="sidebar-count">128</span></a>
+                    <a class="sidebar-item" href="#"><span class="icon"><i class="icon-scale"></i></span> <span class="sidebar-label">More</span> <span class="sidebar-count">42</span></a>
+                    <a class="sidebar-item" href="#"><span class="icon"><i class="icon-trophy"></i></span> <span class="sidebar-label">A label long enough to be truncated</span> <span class="sidebar-count">7</span></a>
+                    <a class="sidebar-item" href="#"><span class="icon"><i class="icon-chart-line"></i></span> <span class="sidebar-label">Reports</span></a>
+                </nav>
+                <div class="sidebar-foot">
+                    <label class="sidebar-item sidebar-collapse">
+                        <input type="checkbox" class="sidebar-collapse-input" autocomplete="off" />
+                        <span class="icon sidebar-when-expanded"><i class="icon-panel-left-close"></i></span>
+                        <span class="icon sidebar-when-collapsed"><i class="icon-panel-left-open"></i></span>
+                        <span class="sidebar-label sidebar-when-expanded">Collapse</span>
+                        <span class="sidebar-label sidebar-when-collapsed">Expand</span>
+                    </label>
+                    <a class="button is-fullwidth" href="#"><span class="icon"><i class="icon-log-out"></i></span> <span class="sidebar-label">Sign out</span></a>
+                </div>
+            </div>
+        </aside>
+        <main class="sidebar-main">
+            <div class="p-6">
+                <h1 class="title is-level-1">sidebar-nav</h1>
+                <p class="block">From 769px up the sidebar is a full-height rail; the first control in its footer, at the bottom left, collapses it to a bar of
+                    icons, where each label flies out on hover or keyboard focus. Below 769px it is a top bar whose burger opens the
+                    navigation as a popover. Resize to try both.</p>
+                <p class="block">The collapsed state is a checkbox, so it needs no script – and is forgotten on the next page unless the
+                    application renders it <code>checked</code>. See README.md.</p>
+                <div class="box">
+                    <p>Page content fills the rest of the width and grows when the sidebar collapses.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

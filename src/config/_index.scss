@@ -1,0 +1,322 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
+
+// ── Theme Mode ───────────────────────────────────────────────────────────────
+
+$output-mode: "auto" !default;
+
+// ── Cascade Layers ───────────────────────────────────────────────────────────
+
+// Wraps all emitted CSS in @layer nuvio.tokens / .reset / .components /
+// .utilities so consumer styles can override Nuvio without specificity fights.
+// Off by default – see README, "Cascade layers", for the !important caveat.
+$css-layers: false !default;
+
+// ── Typography ───────────────────────────────────────────────────────────────
+
+$font-family-sans:   system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$font-family-serif:  "Georgia", "Times New Roman", Times, serif !default;
+$font-family-mono:   ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !default;
+
+$font-size-xs:    0.75rem   !default;
+$font-size-sm:    0.875rem  !default;
+$font-size-base:  1rem      !default;
+$font-size-lg:    1.125rem  !default;
+$font-size-xl:    1.25rem   !default;
+$font-size-2xl:   1.375rem  !default;
+$font-size-3xl:   1.5rem    !default;
+$font-size-4xl:   1.75rem   !default;
+$font-size-5xl:   2.25rem   !default;
+
+$font-weight-light:      300  !default;
+$font-weight-normal:     400  !default;
+$font-weight-medium:     500  !default;
+$font-weight-semibold:   600  !default;
+$font-weight-bold:       700  !default;
+$font-weight-extrabold:  800  !default;
+
+$line-height-base: 1.5 !default;
+
+$heading-line-height: 1.25 !default;
+$heading-levels: (
+  1: (title: (size: $font-size-5xl, weight: $font-weight-extrabold), subtitle: (size: $font-size-4xl,  weight: $font-weight-medium)),
+  2: (title: (size: $font-size-4xl, weight: $font-weight-extrabold), subtitle: (size: $font-size-3xl,  weight: $font-weight-medium)),
+  3: (title: (size: $font-size-3xl, weight: $font-weight-bold),      subtitle: (size: $font-size-2xl,  weight: $font-weight-normal)),
+  4: (title: (size: $font-size-2xl, weight: $font-weight-bold),      subtitle: (size: $font-size-xl,   weight: $font-weight-normal)),
+  5: (title: (size: $font-size-xl,  weight: $font-weight-bold),      subtitle: (size: $font-size-lg,   weight: $font-weight-normal)),
+  6: (title: (size: $font-size-lg,  weight: $font-weight-bold),      subtitle: (size: $font-size-base, weight: $font-weight-normal)),
+) !default;
+
+// ── Spacing ──────────────────────────────────────────────────────────────────
+
+$viewport-gap:   32px    !default;
+$block-spacing:  1.5rem  !default;
+
+$spacing-gaps: (
+  "0":  0,
+  "1":  math.div($block-spacing, 6),
+  "2":  math.div($block-spacing, 3),
+  "3":  math.div($block-spacing, 2),
+  "4":  math.div($block-spacing * 2, 3),
+  "5":  $block-spacing,
+  "6":  math.div($block-spacing * 3, 2),
+  "7":  math.div($block-spacing * 5, 2),
+  "8":  math.div($block-spacing * 7, 2),
+) !default;
+
+$ul-list-indent:  1.2em  !default;
+$ol-list-indent:  1.5em  !default;
+
+// Emits the flow-relative .ms-* / .me-* / .ps-* / .pe-* helpers alongside the
+// physical .ml-* / .mr-* / .pl-* / .pr-* ones.
+$spacing-logical: true !default;
+
+// ── Breakpoints ──────────────────────────────────────────────────────────────
+
+$breakpoints: (
+  "sm":  (min: 769px,  container: 769px - $viewport-gap - 1px), // ensures smooth viewport transition as the smallest viewport has half a $viewport-gap on each side
+  "md":  (min: 1152px, container: 1152px - $viewport-gap * 2),
+  "lg":  (min: 1600px, container: 1600px - $viewport-gap * 3),
+  "xl":  (min: 1920px, container: 1920px - $viewport-gap * 3),
+) !default;
+
+// ── Columns ──────────────────────────────────────────────────────────────────
+
+$column-count: 24 !default;
+
+// ── Border Radii and Widths ──────────────────────────────────────────────────
+
+$radius-sm:    0.25rem  !default;
+$radius:       0.4rem   !default;
+$radius-lg:    0.75rem  !default;
+$radius-pill:  9999px   !default;
+
+$border-sm:  1px  !default;
+$border:     2px  !default;
+$border-lg:  3px  !default;
+
+// ── Transitions ──────────────────────────────────────────────────────────────
+
+$duration:  250ms     !default;
+$easing:    ease-out  !default;
+
+// ── Background and Foreground Colors ─────────────────────────────────────────
+
+$light-bg:    hsl(221, 14%, 95%)  !default;
+$light-text:  hsl(221, 14%, 21%)  !default;
+$dark-bg:     hsl(221, 14%, 9%)   !default;
+$dark-text:   hsl(221, 14%, 77%)  !default;
+
+// Text derivation offsets
+$text-muted-lightness-offset:       16%  !default;
+$text-muted-saturation-offset:      9%   !default;
+$text-highlight-lightness-offset:   9%   !default;
+$text-highlight-saturation-offset:  6%   !default;
+
+// ── Semantic Colors ──────────────────────────────────────────────────────────
+
+// light/dark: the exact fill color per theme mode
+// text-light/text-dark: foreground text on that surface
+$semantic-colors: (
+  "primary":    (light: hsl(216, 98%, 52%), dark: hsl(216, 98%, 52%), text-light: #fff, text-dark: #fff),
+  "secondary":  (light: hsl(208, 12%, 86%), dark: hsl(209, 11%, 38%), text-light: #000, text-dark: #fff),
+  "link":       (light: hsl(216, 98%, 52%), dark: hsl(216, 98%, 52%), text-light: #fff, text-dark: #fff),
+  "info":       (light: hsl(190, 90%, 50%), dark: hsl(190, 90%, 50%), text-light: #000, text-dark: #000),
+  "success":    (light: hsl(152, 69%, 31%), dark: hsl(152, 69%, 31%), text-light: #fff, text-dark: #fff),
+  "warning":    (light: hsl(45,  99%, 51%), dark: hsl(45,  99%, 51%), text-light: #000, text-dark: #000),
+  "danger":     (light: hsl(354, 70%, 54%), dark: hsl(354, 70%, 54%), text-light: #fff, text-dark: #fff),
+  "bright":     (light: hsl(210, 17%, 98%), dark: hsl(210, 17%, 98%), text-light: #000, text-dark: #000),
+  "dim":        (light: hsl(210, 11%, 15%), dark: hsl(210, 11%, 15%), text-light: #fff, text-dark: #fff),
+) !default;
+
+$semantic-color-additions: () !default;
+$semantic-color-excludes:  () !default;
+
+$semantic-colors: map.merge($semantic-colors, $semantic-color-additions);
+@each $key in $semantic-color-excludes {
+  $semantic-colors: map.remove($semantic-colors, $key);
+}
+
+// ── Color Derivation Offsets ─────────────────────────────────────────────────
+
+$hover-lightness-offset:   7%   !default;
+$active-lightness-offset:  14%  !default;
+
+$outline-light-max-lightness:  40%  !default;
+$outline-dark-min-lightness:   60%  !default;
+
+$tint-light-weight-light:       7%   !default;
+$tint-light-weight-dark:        35%  !default;
+$tint-light-text-weight-light:  75%  !default;
+$tint-light-text-weight-dark:   30%  !default;
+$tint-dark-weight-light:        35%  !default;
+$tint-dark-weight-dark:         35%  !default;
+
+$surface-step-light:  3%  !default;
+$surface-step-dark:   4%  !default;
+$surface-hover-step:  3%  !default;
+
+$border-light-lightness-offset:    12%  !default;
+$border-light-saturation-offset:   4%   !default;
+$border-dark-lightness-offset:     17%  !default;
+$border-dark-saturation-offset:    6%   !default;
+$control-border-lightness-offset:  12%  !default;
+
+$focus-ring-opacity:      40% !default;
+$focus-ring-color-light:  map.get(map.get($semantic-colors, "link"), "light") !default;
+$focus-ring-color-dark:   map.get(map.get($semantic-colors, "link"), "dark") !default;
+
+// ── Light Theme Surfaces ─────────────────────────────────────────────────────
+
+$light-border:          color.adjust($light-bg, $lightness: -$border-light-lightness-offset, $saturation: -$border-light-saturation-offset) !default;
+$light-text-muted:      color.adjust($light-text, $lightness: +$text-muted-lightness-offset, $saturation: -$text-muted-saturation-offset) !default;
+$light-text-highlight:  color.adjust($light-text, $lightness: -$text-highlight-lightness-offset, $saturation: +$text-highlight-saturation-offset) !default;
+$light-control-bg:      color.adjust($light-bg, $lightness: -$surface-step-light) !default;
+$light-control-border:  color.adjust($light-border, $lightness: -$control-border-lightness-offset) !default;
+$light-control-text:    $light-text !default;
+$light-control-hover:   color.adjust($light-bg, $lightness: -($surface-step-light + $surface-hover-step)) !default;
+
+$light-surface-1:        color.adjust($light-bg, $lightness: -$surface-step-light) !default;
+$light-surface-2:        color.adjust($light-bg, $lightness: -($surface-step-light * 2)) !default;
+$light-surface-3:        color.adjust($light-bg, $lightness: -($surface-step-light * 3)) !default;
+$light-surface-4:        color.adjust($light-bg, $lightness: -($surface-step-light * 4)) !default;
+$light-surface-1-hover:  color.adjust($light-bg, $lightness: -($surface-step-light     + $surface-hover-step)) !default;
+$light-surface-2-hover:  color.adjust($light-bg, $lightness: -($surface-step-light * 2 + $surface-hover-step)) !default;
+$light-surface-3-hover:  color.adjust($light-bg, $lightness: -($surface-step-light * 3 + $surface-hover-step)) !default;
+$light-surface-4-hover:  color.adjust($light-bg, $lightness: -($surface-step-light * 4 + $surface-hover-step)) !default;
+
+// ── Dark Theme Surfaces ──────────────────────────────────────────────────────
+
+$dark-border:          color.adjust($dark-bg, $lightness: +$border-dark-lightness-offset, $saturation: -$border-dark-saturation-offset) !default;
+$dark-text-muted:      color.adjust($dark-text, $lightness: -$text-muted-lightness-offset, $saturation: -$text-muted-saturation-offset) !default;
+$dark-text-highlight:  color.adjust($dark-text, $lightness: +$text-highlight-lightness-offset, $saturation: +$text-highlight-saturation-offset) !default;
+$dark-control-bg:      color.adjust($dark-bg, $lightness: +$surface-step-dark) !default;
+$dark-control-border:  color.adjust($dark-border, $lightness: +$control-border-lightness-offset) !default;
+$dark-control-text:    $dark-text !default;
+$dark-control-hover:   color.adjust($dark-bg, $lightness: +($surface-step-dark + $surface-hover-step)) !default;
+
+$dark-surface-1:        color.adjust($dark-bg, $lightness: +$surface-step-dark) !default;
+$dark-surface-2:        color.adjust($dark-bg, $lightness: +($surface-step-dark * 2)) !default;
+$dark-surface-3:        color.adjust($dark-bg, $lightness: +($surface-step-dark * 3)) !default;
+$dark-surface-4:        color.adjust($dark-bg, $lightness: +($surface-step-dark * 4)) !default;
+$dark-surface-1-hover:  color.adjust($dark-bg, $lightness: +($surface-step-dark     + $surface-hover-step)) !default;
+$dark-surface-2-hover:  color.adjust($dark-bg, $lightness: +($surface-step-dark * 2 + $surface-hover-step)) !default;
+$dark-surface-3-hover:  color.adjust($dark-bg, $lightness: +($surface-step-dark * 3 + $surface-hover-step)) !default;
+$dark-surface-4-hover:  color.adjust($dark-bg, $lightness: +($surface-step-dark * 4 + $surface-hover-step)) !default;
+
+// ── Buttons ──────────────────────────────────────────────────────────────────
+
+$button-padding-y:     0.375em              !default;
+$button-padding-x:     1em                  !default;
+$button-font-size:     $font-size-base      !default;
+$button-font-weight:   $font-weight-medium  !default;
+$button-border-width:  $border              !default;
+$button-radius:        $radius              !default;
+$button-line-height:   $line-height-base    !default;
+$button-icon-x-compensation:  0    !default; // added horizontal padding for button icons, in px
+$button-icon-y-compensation:  .5px !default; // vertical alignment adjustment for button icons (depends on the icon library/fonts used), in px
+
+// ── Text ─────────────────────────────────────────────────────────────────────
+
+$text-icon-y-compensation: 0 !default; // vertical alignment adjustment for text inline icons (depends on the icon library/fonts used), in px
+
+// Optical centering for labels inside fixed-height controls (button, tag,
+// navbar item, segmented). A font reserves more room below the baseline than
+// its glyphs use, so a metrically centered label renders slightly low.
+// Set it to 0 for pure metric centering. In em, so it follows the size modifiers.
+// Defaults to 0.5px at 16px.
+$control-label-y-compensation: 0.03125em !default;
+
+// ── Form Fields ──────────────────────────────────────────────────────────────
+
+$input-border-width:  $border !default;
+$input-padding-y:     calc(0.5em - #{$input-border-width}) !default;
+$input-padding-x:     0.75em !default;
+$input-font-size:     $font-size-base !default;
+$input-line-height:   $line-height-base !default;
+$input-radius:        $radius !default;
+$input-height:        2.5em !default;
+
+// Styles :user-invalid / :user-valid on .input, .textarea and .select select.
+// Both pseudo-classes only match after the user has interacted, so no premature
+// error state. Set false to opt out of automatic validation feedback.
+$form-validation-styling: true !default;
+
+$file-name-max-width: 16em !default;
+
+$label-font-size:    $font-size-sm        !default;
+$label-font-weight:  $font-weight-medium  !default;
+
+$checkbox-size:  1.1em  !default;
+$checkbox-gap:   0.6em  !default;
+
+$toggle-height:     1.5em  !default;
+$toggle-width:      2.6em  !default;
+$toggle-thumb-gap:  0.2em  !default;
+
+$range-thumb-size:  1.25em  !default;
+
+// ── Accordion Component ──────────────────────────────────────────────────────
+
+// Padding is em-based so the .is-small / .is-medium / .is-large modifiers scale
+// the whole disclosure, not just its type.
+$accordion-padding-y:        0.625em     !default;
+$accordion-padding-x:        1em         !default;
+$accordion-radius:           $radius     !default;
+$accordion-border-width:     $border-sm  !default;
+$accordion-summary-weight:   $font-weight-medium  !default;
+
+// ── Box Component ────────────────────────────────────────────────────────────
+
+$box-padding:       1.25rem     !default;
+$box-radius:        $radius-lg  !default;
+$box-border-width:  0           !default;
+
+// ── Dropdown Component ───────────────────────────────────────────────────────
+
+$dropdown-border-width: $border !default;
+
+// ── Modal Component ──────────────────────────────────────────────────────────
+
+$modal-radius:           $radius-lg   !default;
+$modal-border-width:     $border-sm   !default;
+$modal-padding:          1.1rem 1.25rem !default;
+$modal-max-width:        40rem        !default;
+$modal-max-width-small:  26rem        !default;
+$modal-max-width-large:  60rem        !default;
+
+// The scrim is deliberately theme-invariant – it darkens whatever is behind it.
+$modal-backdrop-color: rgb(0 0 0 / 55%) !default;
+$modal-backdrop-blur:  5px             !default;
+
+// ── Progress Bar Component ───────────────────────────────────────────────────
+
+$progress-height:  1rem          !default;
+$progress-radius:  $radius-pill  !default;
+
+// ── Tag Component ────────────────────────────────────────────────────────────
+
+$tag-radius:     $radius-sm  !default;
+$tag-padding-x:  0.75em      !default;
+
+// ── Table Component ──────────────────────────────────────────────────────────
+
+$table-cell-padding-y:  0.5em       !default;
+$table-cell-padding-x:  0.75em      !default;
+$table-border-width:    $border-sm  !default;
+
+// ── Placeholder Component ────────────────────────────────────────────────────
+
+$placeholder-block-min-height:  4.5em  !default;
+$placeholder-lines-gap:         .75em  !default;
+$placeholder-line-height:       .75em  !default;
+
+// ── Navbar Component ─────────────────────────────────────────────────────────
+
+$navbar-height-sm:    3rem    !default;
+$navbar-height:       4rem    !default;
+$navbar-height-lg:    5rem    !default;
+$navbar-img-padding:  .75rem  !default;
+$navbar-z:            30      !default;
+$navbar-breakpoint:   "sm"    !default;

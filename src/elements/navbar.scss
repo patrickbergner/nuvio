@@ -1,0 +1,463 @@
+@use "sass:math";
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+@mixin _navbar-fixed {
+  inset-inline:  0;
+  position:      fixed;
+  z-index:       c.$navbar-z;
+}
+
+@include l.layer("components") {
+  // ── .navbar ────────────────────────────────────────────────────────────────
+  .navbar {
+    --nv-navbar-h: #{c.$navbar-height};
+    background-color:  var(--nv-navbar-bg, var(--nv-surface-1));
+    position:          relative;
+
+    &.is-small {
+      --nv-navbar-h: #{c.$navbar-height-sm};
+    }
+
+    &.is-large {
+      --nv-navbar-h: #{c.$navbar-height-lg};
+    }
+
+    &.is-fixed-top {
+      @include _navbar-fixed;
+      top: 0;
+    }
+
+    &.is-fixed-bottom {
+      @include _navbar-fixed;
+      bottom: 0;
+    }
+  }
+
+  body {
+    &.has-navbar-fixed-top {
+      padding-top: c.$navbar-height;
+
+      // Track the navbar's own height so a sized navbar does not leave a gap or overlap.
+      &:has(.navbar.is-fixed-top.is-small) { padding-top: c.$navbar-height-sm; }
+      &:has(.navbar.is-fixed-top.is-large) { padding-top: c.$navbar-height-lg; }
+    }
+
+    &.has-navbar-fixed-bottom {
+      padding-bottom: c.$navbar-height;
+
+      &:has(.navbar.is-fixed-bottom.is-small) { padding-bottom: c.$navbar-height-sm; }
+      &:has(.navbar.is-fixed-bottom.is-large) { padding-bottom: c.$navbar-height-lg; }
+    }
+  }
+
+  // ── .navbar-brand ──────────────────────────────────────────────────────────
+  .navbar-brand {
+    align-items:  center;
+    display:      flex;
+    flex-shrink:  0;
+    min-height:   var(--nv-navbar-h);
+  }
+
+  // ── .navbar-burger ─────────────────────────────────────────────────────────
+  .navbar-burger {
+    appearance:           none;
+    background:           none;
+    border:               none;
+    cursor:               pointer;
+    display:              block;
+    height:               var(--nv-navbar-h);
+    margin-inline-start:  auto;
+    position:             relative;
+    width:                var(--nv-navbar-h);
+
+    span {
+      background-color:  var(--nv-navbar-text, var(--nv-text));
+      display:           block;
+      height:            2px;
+      left:              calc(50% - 11px);
+      position:          absolute;
+      transform-origin:  center;
+      transition:        background-color c.$duration c.$easing, opacity c.$duration c.$easing, transform c.$duration c.$easing;
+      width:             22px;
+
+      // The bars still swap to an X, they just stop travelling there.
+      @media (prefers-reduced-motion: reduce) {
+        transition-property: background-color, opacity;
+      }
+
+      &:nth-child(1) {
+        top: calc(50% - 8px);
+      }
+
+      &:nth-child(2) {
+        top: calc(50% - 1px);
+      }
+
+      &:nth-child(3) {
+        top: calc(50% + 6px);
+      }
+    }
+  }
+
+  // The burger shows its X while the menu it controls is open.
+  .navbar:has(.navbar-menu:popover-open) .navbar-burger span {
+    &:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    &:nth-child(2) { opacity: 0; }
+    &:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+
+  // ── .navbar-menu ───────────────────────────────────────────────────────────
+  .navbar-menu {
+    display: none;
+  }
+
+  // ── .navbar-item / .navbar-link ────────────────────────────────────────────
+  .navbar-item,
+  .navbar-link {
+    color:           var(--nv-navbar-text, var(--nv-text));
+    display:         block;
+    line-height:     c.$line-height-base;
+    padding-block:   calc(.5rem - #{c.$control-label-y-compensation}) calc(.5rem + #{c.$control-label-y-compensation});
+    padding-inline:  math.div(c.$block-spacing, 2);
+    position:        relative;
+
+    img,
+    svg {
+      display:  block;
+      height:   calc(var(--nv-navbar-h) - #{c.$navbar-img-padding * 2});
+      width:    auto;
+    }
+  }
+
+  .navbar-brand .navbar-item.is-flush {
+    padding-top:     0;
+    padding-bottom:  0;
+  }
+
+  .navbar-brand .navbar-item.is-flush img,
+  .navbar-brand .navbar-item.is-flush svg {
+    height: var(--nv-navbar-h);
+  }
+
+  a.navbar-item,
+  .navbar-link {
+    cursor: pointer;
+  }
+
+  :not(a).navbar-item {
+    padding: math.div(c.$block-spacing, 4);
+  }
+
+  .navbar-brand> :first-child {
+    padding-inline-start: 0;
+  }
+
+  .navbar-end> :last-child:not(a) {
+    padding-inline-end: 0;
+  }
+
+  .navbar-brand a.navbar-item {
+
+    @include u.on-hover {
+      color: var(--nv-navbar-text, var(--nv-text));
+    }
+
+    &:focus {
+      color: var(--nv-navbar-text, var(--nv-text));
+    }
+  }
+
+  .navbar-menu a.navbar-item,
+  .navbar-menu .navbar-link {
+
+    @include u.on-hover {
+      background-color:  var(--nv-navbar-hover, var(--nv-surface-1-hover));
+      color:             var(--nv-navbar-text, var(--nv-text));
+    }
+
+    &:focus {
+      background-color:  var(--nv-navbar-hover, var(--nv-surface-1-hover));
+      color:             var(--nv-navbar-text, var(--nv-text));
+    }
+  }
+
+  // ── .navbar-link (Dropdown Trigger Arrow) ──────────────────────────────────
+  .navbar-link {
+    padding-inline-end: 2.5em;
+
+    &::after {
+      @include u.arrow;
+      border-color:      var(--nv-navbar-text, var(--nv-text-muted));
+      inset-inline-end:  1.125em;
+      margin-top:        -.375em;
+    }
+  }
+
+  .navbar-item.is-dropdown {
+    padding: 0;
+  }
+
+  // ── .navbar-dropdown ───────────────────────────────────────────────────────
+  .navbar-dropdown {
+    .navbar-item {
+      padding:      .375rem 1rem;
+      white-space:  nowrap;
+    }
+
+    a.navbar-item {
+      padding-inline-end: 3rem;
+    }
+  }
+
+  // ── .navbar-divider ────────────────────────────────────────────────────────
+  .navbar-divider {
+    background-color:  var(--nv-navbar-hover, var(--nv-surface-1-hover));
+    border:            none;
+    display:           none;
+    height:            c.$dropdown-border-width;
+    margin:            .5rem 0;
+  }
+
+  // ── Mobile (Below Breakpoint) ──────────────────────────────────────────────
+  @include u.bp-below(c.$navbar-breakpoint) {
+    .navbar>.container .navbar-burger {
+      margin-inline-end: -.4rem;
+    }
+
+    .navbar-brand .navbar-item {
+      align-items:  center;
+      display:      flex;
+    }
+
+    .navbar-brand .navbar-item.is-fullwidth-mobile {
+      flex: 1 1 auto;
+    }
+
+    .navbar-link::after {
+      display: none;
+    }
+
+    .navbar-menu {
+      background-color:  var(--nv-navbar-bg, var(--nv-surface-1));
+      padding:           .5rem 0;
+
+      .navbar-end {
+        margin-top: .8rem;
+      }
+    }
+
+    // ── Collapsed Menu: [popover] ───────────────────────────────────────────
+    // `popovertarget` on the burger opens the menu; the browser handles closing,
+    // ESC, light dismissal and the button's expanded state. The menu is in the
+    // top layer once open, so anchor positioning is what drops it under its own
+    // navbar at matching width – `anchor-scope` keeps the name from leaking to a
+    // second navbar on the same page.
+    .navbar {
+      anchor-name:   --nv-navbar;
+      anchor-scope:  --nv-navbar;
+    }
+
+    .navbar-menu[popover] {
+      border:           0;
+      color:            inherit;
+      inset:            auto;
+      justify-self:     stretch;
+      margin:           0;
+      max-height:       80dvh;
+      overflow-y:       auto;
+      padding-inline:   math.div(c.$block-spacing, 2);
+      position:         absolute;
+      position-anchor:  --nv-navbar;
+      position-area:    block-end center;
+      width:            auto;
+
+      &:popover-open { display: block; }
+    }
+
+    .navbar-menu .navbar-item,
+    .navbar-menu .navbar-link {
+      align-items:     center;
+      display:         flex;
+      gap:             .15em;
+      padding-inline:  0;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .navbar-menu a.navbar-item:hover,
+      .navbar-menu .navbar-link:hover {
+        background-color: transparent;
+      }
+    }
+
+    .navbar-menu a.navbar-item:focus,
+    .navbar-menu .navbar-link:focus {
+      background-color: transparent;
+    }
+
+    .navbar-menu .navbar-divider {
+      display: block;
+    }
+
+    .navbar-item.is-dropdown {
+      align-items:     stretch;
+      flex-direction:  column;
+    }
+
+    .navbar-item.is-dropdown>.navbar-dropdown {
+      background:            transparent;
+      border:                none;
+      box-shadow:            none;
+      display:               block;
+      padding-inline-start:  1.2rem;
+      position:              static;
+    }
+  }
+
+  // ── Desktop (At and Above Breakpoint) ──────────────────────────────────────
+  @include u.bp-from(c.$navbar-breakpoint) {
+    .navbar {
+      align-items:  stretch;
+      display:      flex;
+      min-height:   var(--nv-navbar-h);
+
+      @media (hover: hover) and (pointer: fine) {
+        &.is-hoverless a.navbar-item:hover {
+          background-color: transparent;
+        }
+      }
+
+      &.is-hoverless a.navbar-item:focus {
+        background-color: transparent;
+      }
+    }
+
+    .navbar-burger {
+      display: none;
+    }
+
+    // Past the breakpoint the menu sits in the bar, so the UA's popover chrome
+    // (border, Canvas background, padding, fit-content sizing) has to go – it
+    // applies even while the popover is closed. This also tidies up a menu that
+    // was left open at mobile width and is still in the top layer.
+    // `height` matters as much as `width` here: the UA's fit-content height stops
+    // the menu from stretching to the bar, which glues its items to the top and
+    // breaks their alignment against the brand.
+    .navbar-menu[popover] {
+      background:  none;
+      border:      0;
+      color:       inherit;
+      height:      auto;
+      inset:       auto;
+      margin:      0;
+      max-height:  none;
+      overflow:    visible;
+      padding:     0;
+      position:    static;
+      width:       auto;
+    }
+
+    .navbar>.container {
+      align-items:  stretch;
+      display:      flex;
+    }
+
+    .navbar-brand {
+      margin-inline-end: .5rem;
+    }
+
+    .navbar-menu {
+      align-items:  stretch;
+      display:      flex;
+      flex-grow:    1;
+      flex-shrink:  0;
+    }
+
+    .navbar-start,
+    .navbar-end {
+      align-items:  stretch;
+      display:      flex;
+    }
+
+    .navbar-start {
+      margin-inline-end: auto;
+    }
+
+    .navbar-end {
+      justify-content:      flex-end;
+      margin-inline-start:  auto;
+    }
+
+    .navbar-item,
+    .navbar-link {
+      align-items:  center;
+      display:      flex;
+      gap:          .15em;
+    }
+
+    .navbar-item.is-dropdown {
+      align-items:   stretch;
+      anchor-scope:  --nv-navbar-dropdown;
+      position:      relative;
+
+      .navbar-dropdown {
+        background-color: var(--nv-navbar-bg, var(--nv-surface-1));
+        @include t.theme("border-color", "border");
+        display:             none;
+        inset-inline-start:  0;
+        min-width:           100%;
+        position:            absolute;
+        top:                 100%;
+        z-index:             c.$navbar-z - 10;
+      }
+
+      &.is-right .navbar-dropdown {
+        inset-inline-start:  auto;
+        inset-inline-end:    0;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &.is-hover:hover {
+          .navbar-dropdown {
+            display: block;
+          }
+        }
+      }
+
+      // Click-to-open submenu: `popovertarget` on the .navbar-link, `popover` on
+      // the .navbar-dropdown. Unlike .is-hover this also works by keyboard and
+      // on touch, so it is the better default for a navigable submenu.
+      > .navbar-link {
+        anchor-name: --nv-navbar-dropdown;
+      }
+
+      .navbar-dropdown[popover] {
+        border:                  0;
+        color:                   inherit;
+        inset:                   auto;
+        justify-self:            start;
+        margin:                  0;
+        min-width:               anchor-size(width);
+        overflow:                visible;
+        position-anchor:         --nv-navbar-dropdown;
+        position-area:           block-end span-inline-end;
+        position-try-fallbacks:  flip-block;
+
+        &:popover-open { display: block; }
+      }
+
+      &.is-right .navbar-dropdown[popover] {
+        inset:          auto;
+        justify-self:   end;
+        position-area:  block-end span-inline-start;
+      }
+    }
+
+    .navbar-divider {
+      display: block;
+    }
+  }
+}

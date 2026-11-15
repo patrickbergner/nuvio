@@ -1,0 +1,27 @@
+@use "../config" as c;
+@use "form-utilities";
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  .input {
+    @include form-utilities.control;
+    align-items: center;
+
+    &.is-pill {
+      border-radius:   c.$radius-pill;
+      padding-inline:  1.25em;
+    }
+
+    &.is-static {
+      background-color:  transparent;
+      border-color:      transparent;
+      box-shadow:        none;
+      padding-inline:    0;
+    }
+
+    &.is-small  { font-size: c.$font-size-sm; }
+    &.is-medium { font-size: c.$font-size-lg; }
+    &.is-large  { font-size: c.$font-size-xl; }
+    &.is-fullwidth { display: block; width: 100%; }
+  }
+}

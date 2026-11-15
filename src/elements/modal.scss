@@ -1,0 +1,123 @@
+@use "sass:math";
+@use "../config" as c;
+@use "../config/themes" as t;
+@use "../config/utilities" as u;
+@use "../config/layers" as l;
+
+@include l.layer("components") {
+  // ── .modal ─────────────────────────────────────────────────────────────────
+  // Styles a native <dialog>. Opening, ESC-to-close, focus containment and the
+  // backdrop are the platform's job – see README for the markup-only variants.
+
+  .modal {
+    @include t.theme("background-color", "surface-1");
+    @include t.theme("border-color",     "border");
+    @include t.theme("color",            "text");
+    border-radius:  c.$modal-radius;
+    border-style:   solid;
+    border-width:   c.$modal-border-width;
+    max-height:     calc(100dvh - #{c.$viewport-gap * 2});
+    max-width:      c.$modal-max-width;
+    padding:        0; // the sections below own the padding
+    width:          calc(100% - #{c.$viewport-gap});
+
+    // `display` has to stay scoped to [open]. An unscoped `display: flex` here
+    // outranks the UA's `dialog:not([open]) { display: none }` and would leave
+    // every dialog on the page permanently visible.
+    &[open] {
+      display:         flex;
+      flex-direction:  column;
+
+      // A form wrapping the whole modal (so its footer buttons can submit it)
+      // is a normal pattern. Make it transparent to the flex layout so
+      // .modal-head/-body/-foot act as direct flex items either way – without
+      // this, the form is an unconstrained flex item and .modal-body's
+      // max-height/overflow never gets applied, breaking the scrollable body.
+      > form { display: contents; }
+    }
+
+    &::backdrop {
+      background-color: c.$modal-backdrop-color;
+      backdrop-filter:  blur(c.$modal-backdrop-blur);
+    }
+
+    &.is-small  { max-width: c.$modal-max-width-small; }
+    &.is-medium { max-width: c.$modal-max-width; }
+    &.is-large  { max-width: c.$modal-max-width-large; }
+  }
+
+  // Native modal dialogs block interaction with the page but not scrolling. Base
+  // already sets `scrollbar-gutter: stable`, so this costs no layout shift.
+  html:has(dialog.modal[open]) {
+    overflow: hidden;
+  }
+
+  // ── .modal-head / .modal-body / .modal-foot ────────────────────────────────
+
+  .modal-head,
+  .modal-foot {
+    align-items:  center;
+    display:      flex;
+    flex-shrink:  0;
+    gap:          math.div(c.$block-spacing, 3);
+    padding:     c.$modal-padding;
+  }
+
+  .modal-head {
+    @include t.theme("border-bottom-color", "border");
+    border-bottom-style:  solid;
+    border-bottom-width:  c.$modal-border-width;
+    justify-content:      space-between;
+
+    // A heading beside a close button is not a last child – drop its block margin.
+    .title,
+    .subtitle { margin-bottom: 0; }
+  }
+
+  // ── .modal-close ─────────────────────────────────────────────────────────
+  // A minimal close control, not a `.button` – full button height and its
+  // link-ink color are both too heavy for a corner glyph next to a title.
+  .modal-close {
+    align-items:      center;
+    appearance:       none;
+    background:       none;
+    border:           none;
+    border-radius:    c.$radius-sm;
+    cursor:           pointer;
+    display:          inline-flex;
+    flex-shrink:      0;
+    height:           1.75em;
+    justify-content:  center;
+    padding:          0;
+    transition:       background-color c.$duration c.$easing, color c.$duration c.$easing;
+    width:            1.75em;
+
+    @include t.theme("color", "text-muted");
+    @include u.close-x;
+
+    @include u.on-hover {
+      @include t.theme("background-color", "surface-1-hover");
+      @include t.theme("color", "text");
+    }
+
+    &:focus-visible {
+      outline:         2px solid;
+      outline-offset:  2px;
+      @include t.theme("outline-color", "focus-ring");
+    }
+  }
+
+  .modal-body {
+    flex:        1 1 auto;
+    overflow-y:  auto;
+    padding:     c.$modal-padding;
+  }
+
+  .modal-foot {
+    @include t.theme("border-top-color", "border");
+    border-top-style:  solid;
+    border-top-width:  c.$modal-border-width;
+    flex-wrap:         wrap;
+    justify-content:   flex-end;
+  }
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Minimized Custom Bundle</title>
+    <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+    <link rel="stylesheet" href="./dist/app.8ae68.css" />
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item is-size-5" href="./index.html">
+                    <span class="icon"><i class="icon-balloon"></i></span>
+                    <strong>App</strong>
+                </a>
+                <button class="navbar-burger" aria-label="menu" aria-controls="navbar-menu" popovertarget="navbar-menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+
+            <div class="navbar-menu" id="navbar-menu" popover>
+                <div class="navbar-start">
+                    <a class="navbar-item" href="#typography">Typography</a>
+                    <a class="navbar-item" href="#forms">Forms</a>
+                    <a class="navbar-item" href="#components">Releases</a>
+                </div>
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="segmented is-small" role="group" aria-label="Color theme">
+                            <label><input type="radio" name="theme" checked><span class="icon"><i class="icon-monitor"></i></span>Auto</label>
+                            <label><input type="radio" name="theme" class="theme-light"><span class="icon"><i class="icon-sun"></i></span>Light</label>
+                            <label><input type="radio" name="theme" class="theme-dark"><span class="icon"><i class="icon-moon"></i></span>Dark</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <section class="hero-split">
+            <div>
+                <h1 class="title is-level-1">Minimized Custom Bundle</h1>
+                <p class="subtitle is-level-5 mb-1">Custom Nuvio Component Set &middot; Added SCSS
+                    &middot; Subsetted Icon &amp; Body Fonts &middot; Auto &amp; Forced Light/Dark Mode &middot; Hashed Resources
+                    &middot; <strong>Zero JavaScript</strong></p>
+                <p class="subtitle is-level-5 block">only ~32&#8239;KB gzipped bundle size <em>for all of this</em> and less than 6&#8239;KB without the fonts/icons</p>
+                <p class="block">
+                    This page is built from a hand-picked subset of
+                    <a href="https://nuvio.emontis.io/" target="_blank"><span class="icon is-glyph"><i class="icon-cloud"></i></span> Nuvio</a>
+                    modules. The compiled stylesheet is post-processed by PurgeCSS for tree shaking and CSSNANO for minimization,
+                    then passed through a variable-renaming utility so every surviving custom property gets an as short as possible name.
+                </p>
+                <p class="block">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
+                    Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh
+                    elementum imperdiet. Duis sagittis ipsum.
+                </p>
+                <p class="block">
+                    Quisque at vehicula ex. Donec placerat, purus in tristique posuere,
+                    nulla lacus faucibus enim, vitae tincidunt quam urna eget arcu. Nam et libero nec
+                    sapien mattis posuere. Integer id magna id orci dignissim consectetur.
+                </p>
+            </div>
+            <div>
+                <div class="box">
+                    <p class="brand-strip">Source Sans 3 &middot; subsetted &middot; self-hosted</p>
+                    <p class="mt-3">
+                        Two static <code>.woff2</code> files ship at weights <code>400</code> and
+                        <code>700</code>, each subsetted to Western European glyphs and hand-picked
+                        typographic punctuation.
+                    </p>
+                    <p class="brand-strip mt-5">Lucide Icon Font &middot; subsetted &middot; self-hosted</p>
+                    <p class="mt-3">
+                        The Lucide icon font is subsetted to the handful of glyphs referenced in this
+                        (and possibly other) files, drastically reducing the resource size.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="typography" class="mt-6">
+            <h2 class="title is-level-2">Typography &amp; Spacing</h2>
+
+            <div class="content">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut purus elit, vestibulum
+                    ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam
+                    arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula
+                    augue eu neque. Pellentesque habitant morbi tristique senectus et netus et
+                    malesuada fames ac turpis egestas.
+                </p>
+
+                <h3>Cras mattis consectetur purus</h3>
+                <p>
+                    Nunc sit amet enim. Nam placerat mauris nec mauris suscipit, quis vestibulum justo
+                    consectetur. Quisque at vehicula ex. Donec placerat, purus in tristique posuere,
+                    nulla lacus faucibus enim, vitae tincidunt quam urna eget arcu. Nam et libero nec
+                    sapien mattis posuere. Integer id magna id orci dignissim consectetur.
+                </p>
+
+                <h4>A Short List</h4>
+                <ul>
+                    <li>Morbi in sem quis dui placerat ornare.</li>
+                    <li>Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam.</li>
+                    <li>Sed arcu. Cras consequat.</li>
+                    <li>Praesent dapibus, neque id cursus faucibus.</li>
+                </ul>
+
+                <p>
+                    Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula
+                    vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales
+                    sit amet, nisi. Pellentesque fermentum dolor.
+                </p>
+
+                <blockquote>
+                    Aliquam erat volutpat. Nunc eleifend leo vitae magna. In id erat non orci commodo
+                    lobortis. Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.
+                </blockquote>
+
+                <p>
+                    Sed diam. Praesent fermentum tempor tellus. Nullam tempus. Mauris ac felis vel
+                    velit tristique imperdiet. Donec at pede. Etiam vel neque nec dui dignissim
+                    bibendum. Vivamus id enim. Phasellus neque orci, porta a, aliquet quis, semper a,
+                    massa.
+                </p>
+            </div>
+        </section>
+
+        <section id="forms" class="mt-6">
+            <h2 class="title is-level-2">Form Controls</h2>
+            <p class="block">
+                Some components are deliberately excluded to keep the shipped CSS small.
+                The components that are included, are tree shaken so only the really needed CSS is present.
+            </p>
+
+            <form class="box">
+                <div class="field">
+                    <label class="label" for="email">Email</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" id="email" placeholder="you@example.com">
+                        <span class="icon is-left"><i class="icon-mail"></i></span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="username">Username</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" id="username" placeholder="jdoe">
+                        <span class="icon is-left"><i class="icon-user"></i></span>
+                    </div>
+                    <p class="help">Lowercase letters and digits only.</p>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="password">Password</label>
+                    <div class="control has-icons-left">
+                        <input class="input is-danger" type="password" id="password">
+                        <span class="icon is-left"><i class="icon-lock"></i></span>
+                    </div>
+                    <p class="help is-danger">Too short &mdash; use at least 12 characters.</p>
+                </div>
+
+                <div class="field">
+                    <label class="label">Notifications</label>
+                    <div class="control">
+                        <label class="toggle is-primary">
+                            <input type="checkbox" checked>
+                            Email updates
+                        </label>
+                    </div>
+                    <div class="control mt-2">
+                        <label class="toggle is-primary">
+                            <input type="checkbox">
+                            Newsletter
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row-leading mt-4">
+                    <div class="control">
+                        <button type="button" class="button is-primary">
+                            <span class="icon"><i class="icon-check"></i></span>
+                            <span>Save changes</span>
+                        </button>
+                    </div>
+                    <div class="control">
+                        <button type="button" class="button is-outlined">
+                            <span class="icon"><i class="icon-x"></i></span>
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section id="components" class="mt-6 mb-6">
+            <h2 class="title is-level-2">Releases</h2>
+            <p class="block">
+                Releases move through staging before reaching production. Builds tagged
+                STABLE can be promoted immediately;
+                those tagged RC need sign-off from a
+                second reviewer, and anything marked YANKED
+                blocks the pipeline until the issue is resolved.
+            </p>
+
+            <div class="box">
+                <p class="mb-2"><span class="tag is-success">STABLE</span></p>
+                <p class="subtitle is-level-3 mb-2"><strong>v1.4.2</strong> &mdash; Production</p>
+                <p>Bundle sizes are down 4&#8239;% after switching the icon font to glyph-level
+                    subsetting. No API changes; existing integrations can upgrade without migration.</p>
+                <div class="row-leading mt-3">
+                    <button class="button is-success">
+                        <span class="icon"><i class="icon-check"></i></span>
+                        <span>Promote</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box mt-4">
+                <p class="mb-2"><span class="tag is-warning">RC</span></p>
+                <p class="subtitle is-level-3 mb-2"><strong>v1.5.0-rc.1</strong> &mdash; Staging</p>
+                <p>Introduces a <code>$semantic-color-additions</code> hook for extending the
+                    palette without forking the config. Two integration tests are still running &mdash;
+                    hold off on promotion until the visual-regression suite clears.</p>
+                <div class="row-leading mt-3">
+                    <button class="button is-warning">
+                        <span class="icon"><i class="icon-alert-triangle"></i></span>
+                        <span>Review</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box mt-4">
+                <p class="mb-2"><span class="tag is-danger">YANKED</span></p>
+                <p class="subtitle is-level-3 mb-2"><strong>v1.5.0-beta.3</strong></p>
+                <p>A minifier ordering change broke the custom-property snapshot baseline. Artefacts
+                    are quarantined; the fix is merged into <code>main</code> and will ship with rc.2.</p>
+                <div class="row-leading mt-3">
+                    <button class="button is-danger">
+                        <span class="icon"><i class="icon-x"></i></span>
+                        <span>Roll back</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer mt-6">
+        <div class="container">
+            <div class="content is-aligned-centered mt-5">
+                <p><strong>nuvio</strong> by <a href="https://emontis.io/" target="_blank">Emontis <span class="icon is-glyph"><i class="icon-external-link"></i></span></a>. The source code is licensed <a href="https://opensource.org/license/mit" target="_blank">MIT <span class="icon is-glyph"><i class="icon-external-link"></i></span></a>.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
