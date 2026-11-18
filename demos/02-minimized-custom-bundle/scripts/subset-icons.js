@@ -81,7 +81,8 @@ async function main() {
         const subsetFont   = require('subset-font');
         const srcBuffer    = fs.readFileSync(SRC_WOFF2);
         const subsetText   = codepointList.map((cp) => String.fromCodePoint(cp)).join('');
-        const subsetBuffer = await subsetFont(srcBuffer, subsetText, { targetFormat: 'woff2' });
+        // The icons are addressed by codepoint only, never by ligature, so the GSUB table is dead weight
+        const subsetBuffer = await subsetFont(srcBuffer, subsetText, { targetFormat: 'woff2', dropTables: ['GSUB'] });
         fs.writeFileSync(OUT_WOFF2, subsetBuffer);
     }
 
