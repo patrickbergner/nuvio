@@ -1,0 +1,71 @@
+name: Pages
+
+# Deploys the demos as one GitHub Pages site (see scripts/build-site.js):
+#   /                   demos/01-overview
+#   /minimized-bundle/  demos/02-minimized-custom-bundle
+#
+# release.yml calls this after every stable release. Run it by hand to
+# redeploy – pick the latest v* tag as the ref, so the site keeps showing
+# released code rather than whatever is on main.
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+
+      - name: Build Nuvio
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      # The demo installs Nuvio from ../.. (file:), so it is rebuilt against the
+      # src/ of this very ref rather than served from its committed dist/.
+      - name: Build the custom-bundle demo
+        working-directory: demos/02-minimized-custom-bundle
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Assemble the site
+        run: node scripts/build-site.js
+
+      # Fails early, with a clear message, while Pages is not enabled.
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write # deploy-pages
+      id-token: write # deploy-pages proves its origin via OIDC
+
+    # One deployment at a time; a newer one waits instead of cancelling.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

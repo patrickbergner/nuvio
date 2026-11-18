@@ -1,6 +1,6 @@
 {
     "name": "nuvio",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "homepage": "https://nuvio.emontis.io/",
     "author": {
         "name": "Emontis",
@@ -18,9 +18,16 @@
         "framework",
         "grid",
         "responsive",
-        "bulma",
-        "nuvio"
+        "minimal",
+        "lightweight",
+        "easy",
+        "bulma"
     ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/patrickbergner/nuvio.git"
+    },
+    "bugs": "https://github.com/patrickbergner/nuvio/issues",
     "license": "MIT",
     "main": "src/main-full-auto.scss",
     "style": "dist/nuvio.css",
@@ -30,6 +37,8 @@
         "LICENSE",
         "README.md"
     ],
+    "jsdelivr": "dist/nuvio.min.css",
+    "unpkg": "dist/nuvio.min.css",
     "devDependencies": {
         "sass": "^1"
     },
@@ -49,8 +58,5 @@
         "dist-sizes": "node scripts/dist-sizes.js",
         "dist-sizes-json": "node scripts/dist-sizes.js --json",
         "prepublishOnly": "npm run build"
-    },
-    "allowScripts": {
-        "@parcel/watcher@2.6.0": true
     }
 }

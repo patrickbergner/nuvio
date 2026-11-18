@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      # dist/ is committed and released as it is, so a commit whose dist/ is not
+      # what its src/ builds is caught here rather than at release time.
+      - name: Verify dist/ matches src/
+        run: |
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            echo "error: dist/ is not what src/ builds – run npm run build and commit dist/" >&2
+            git status --short -- dist >&2
+            exit 1
+          fi
+
+      - name: Bundle sizes
+        run: npm run dist-sizes
+
+      - name: Package contents
+        run: npm pack --dry-run
+
+  # Builds the Pages site the way pages.yml does, minus the deploy, so a broken
+  # demo shows up on the commit that broke it rather than after a release.
+  site:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+
+      - name: Build Nuvio
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Build the custom-bundle demo
+        working-directory: demos/02-minimized-custom-bundle
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Assemble the site
+        run: node scripts/build-site.js
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site-${{ github.sha }}
+          path: _site/
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,231 @@
+name: Release
+
+# Pushing a v* tag publishes; running this by hand from a branch is a full
+# rehearsal – every check plus a dry-run publish – that publishes nothing.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      dist-tag: ${{ steps.version.outputs.dist-tag }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+
+      - name: Resolve version
+        id: version
+        run: |
+          set -euo pipefail
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "error: package.json holds version '$version', expected X.Y.Z or X.Y.Z-rc.N" >&2
+            exit 1
+          fi
+          # The tag names the GitHub release and package.json the npm version, so
+          # a tag that disagreed would publish one release under two numbers.
+          # Fail before anything is built.
+          if [ "${GITHUB_REF}" != "${GITHUB_REF#refs/tags/}" ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "error: tag $GITHUB_REF_NAME does not match package.json (expected v$version)" >&2
+            exit 1
+          fi
+          # Catches a forgotten version bump before anything is published. Newer
+          # npm wraps a single --json field in an array, older npm does not.
+          times="$(npm view "$name" time --json 2>/dev/null || echo '{}')"
+          if printf '%s' "$times" | node -e 'const j = JSON.parse(require("fs").readFileSync(0, "utf8")); const t = Object.assign({}, ...[].concat(j)); process.exit(Object.hasOwn(t, process.argv[1]) ? 0 : 1)' "$version"; then
+            echo "error: $name@$version was published before; npm will not accept that number again" >&2
+            exit 1
+          fi
+          case "$version" in
+            *-*) prerelease=true;  dist_tag=next ;;
+            *)   prerelease=false; dist_tag=latest ;;
+          esac
+          {
+            echo "name=$name"
+            echo "version=$version"
+            echo "prerelease=$prerelease"
+            echo "dist-tag=$dist_tag"
+          } >>"$GITHUB_OUTPUT"
+          echo "Version: $name@$version (npm dist-tag $dist_tag)"
+
+      # Trusted publishing signs a provenance statement naming this repository,
+      # and npm refuses the upload unless package.json names the same one.
+      - name: Check package metadata
+        run: |
+          set -euo pipefail
+          expected="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+          url="$(node -p "const r = require('./package.json').repository; (r && (r.url || r)) || ''")"
+          if [ "$(printf '%s' "$url" | sed -E 's#^git\+##; s#\.git$##')" != "$expected" ]; then
+            echo "error: package.json repository.url is '$url', expected git+$expected.git" >&2
+            exit 1
+          fi
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      # The release re-proves everything rather than trusting that CI passed on
+      # the same commit.
+      - name: Build
+        run: npm run build
+
+      # dist/ is committed – jsDelivr's /gh/ endpoint and the demos serve it
+      # straight from the tag – so it has to be exactly what src/ builds.
+      - name: Verify dist/ matches src/
+        run: |
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            echo "error: dist/ is not what src/ builds – run npm run build and commit dist/" >&2
+            git status --short -- dist >&2
+            exit 1
+          fi
+
+      - name: Bundle sizes
+        run: npm run dist-sizes
+
+      # Everything after this ships the one tarball packed here, so npm, the
+      # release assets and their checksums cannot drift apart.
+      - name: Pack
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          npm pack --pack-destination artifacts
+          tarball="artifacts/$NAME-$VERSION.tgz"
+          tar -tzf "$tarball" | sort >contents.txt
+          for f in package.json README.md LICENSE dist/nuvio.css dist/nuvio.min.css src/main-full-auto.scss; do
+            if ! grep -qx "package/$f" contents.txt; then
+              echo "error: $tarball lacks $f" >&2
+              exit 1
+            fi
+          done
+          css="$(grep -c '^package/dist/.*\.css$' contents.txt)"
+          if [ "$css" -ne 16 ]; then
+            echo "error: expected 16 CSS files in dist/, the tarball holds $css" >&2
+            exit 1
+          fi
+          (cd dist && zip -q -r "../artifacts/$NAME-$VERSION-dist.zip" .)
+          (cd artifacts && sha256sum -- *.tgz *.zip >SHA256SUMS.txt && cat SHA256SUMS.txt)
+
+      - name: Release notes
+        run: |
+          node scripts/release-notes.js artifacts/notes.md
+          cat artifacts/notes.md
+
+      # The ./ matters: without it npm reads artifacts/x.tgz as a GitHub
+      # user/repo shorthand instead of a file.
+      - name: Dry-run publish
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+          VERSION: ${{ steps.version.outputs.version }}
+          DIST_TAG: ${{ steps.version.outputs.dist-tag }}
+        run: npm publish "./artifacts/$NAME-$VERSION.tgz" --dry-run --tag "$DIST_TAG"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ steps.version.outputs.version }}
+          path: artifacts/
+          if-no-files-found: error
+          compression-level: 0 # the payload is already-compressed archives
+
+  # Gated on the tag, so a workflow_dispatch run stops after the build job.
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    # The npm trusted publisher names this environment, and the environment
+    # admits v* tags only, so no other ref can publish even if the condition
+    # above were ever wrong.
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/${{ needs.build.outputs.name }}/v/${{ needs.build.outputs.version }}
+
+    permissions:
+      contents: write # gh release create
+      id-token: write # npm trusted publishing (OIDC), which also signs provenance
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      NAME: ${{ needs.build.outputs.name }}
+      VERSION: ${{ needs.build.outputs.version }}
+      PRERELEASE: ${{ needs.build.outputs.prerelease }}
+      DIST_TAG: ${{ needs.build.outputs.dist-tag }}
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-${{ needs.build.outputs.version }}
+          path: artifacts
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          registry-url: https://registry.npmjs.org
+
+      # Without OIDC support npm falls back to token auth and fails with a
+      # misleading ENEEDAUTH; say what is actually wrong instead.
+      - name: Check npm supports trusted publishing
+        run: |
+          npm_version="$(npm -v)"
+          if ! node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)' "$npm_version"; then
+            echo "error: npm $npm_version cannot publish via OIDC, 11.5.1 or later is needed" >&2
+            exit 1
+          fi
+
+      # A draft first: the assets go up before anyone sees the release, which is
+      # also what immutable releases require. A re-run reuses the draft.
+      - name: Draft GitHub release
+        run: |
+          set -euo pipefail
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            flags=()
+            if [ "$PRERELEASE" = true ]; then flags+=(--prerelease); fi
+            gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+              --title "Nuvio $VERSION" --notes-file artifacts/notes.md --generate-notes "${flags[@]}"
+          fi
+          gh release upload "$GITHUB_REF_NAME" --clobber \
+            "artifacts/$NAME-$VERSION.tgz" "artifacts/$NAME-$VERSION-dist.zip" artifacts/SHA256SUMS.txt
+
+      # The one step that cannot be undone – a version on npm can never be
+      # replaced – so it runs only once the release is staged. A re-run skips
+      # it if it already landed.
+      - name: Publish to npm
+        run: |
+          set -euo pipefail
+          if [ "$(npm view "$NAME@$VERSION" version 2>/dev/null)" = "$VERSION" ]; then
+            echo "$NAME@$VERSION is on npm already, skipping"
+          else
+            npm publish "./artifacts/$NAME-$VERSION.tgz" --tag "$DIST_TAG"
+          fi
+
+      - name: Publish GitHub release
+        run: gh release edit "$GITHUB_REF_NAME" --draft=false
+
+  # Prereleases go to npm under "next" and leave the site on the last stable
+  # release, which is what the README and the CDN links describe.
+  pages:
+    needs: [build, publish]
+    if: needs.build.outputs.prerelease == 'false'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
