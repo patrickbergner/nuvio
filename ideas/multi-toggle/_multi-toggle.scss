@@ -1,0 +1,112 @@
+@use "../../src/config" as c;
+@use "../../src/config/themes" as t;
+@use "../../src/config/utilities" as u;
+@use "../../src/config/layers" as l;
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+// Positions the thumb can reach – one :has() rule per slot.
+$multi-toggle-max-slots: 6 !default;
+
+// One slot is a square of the control's inner height; the thumb steps by it.
+$_slot: calc(#{c.$toggle-height} - #{2 * c.$input-border-width});
+
+@include l.layer("components") {
+  // ── .multi-toggle ──────────────────────────────────────────────────────────
+  .multi-toggle {
+    display:        inline-flex;
+    align-items:    stretch;
+    position:       relative;
+    cursor:         pointer;
+    height:         c.$toggle-height;
+    border-radius:  c.$radius-pill;
+    border-style:   solid;
+    border-width:   c.$input-border-width;
+
+    @include t.theme("background-color", "control-bg");
+    @include t.theme("border-color",     "control-border");
+
+    transition: background-color c.$duration c.$easing,
+                border-color     c.$duration c.$easing;
+
+    // ── Slots ────────────────────────────────────────────────────────────────
+    > label {
+      cursor:       pointer;
+      display:      block;
+      flex-shrink:  0;
+      width:        $_slot;
+
+      // Hidden but still focusable, so arrow keys move between the slots.
+      input[type="radio"] {
+        appearance:  none;
+        position:    absolute;
+        width:       0;
+        height:      0;
+        margin:      0;
+        opacity:     0;
+      }
+    }
+
+    // ── Thumb ────────────────────────────────────────────────────────────────
+    // Travels along `inset-inline-start`, like `.toggle`, so it mirrors under
+    // `dir="rtl"`.
+    &::after {
+      content:             "";
+      position:            absolute;
+      pointer-events:      none;
+      top:                 c.$toggle-thumb-gap;
+      inset-inline-start:  c.$toggle-thumb-gap;
+      width:               calc(#{$_slot} - #{2 * c.$toggle-thumb-gap});
+      aspect-ratio:        1;
+      border-radius:       c.$radius-pill;
+      @include t.theme("background-color", "fill-link");
+      transition: inset-inline-start  c.$duration c.$easing,
+                  background-color    c.$duration c.$easing;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: background-color c.$duration c.$easing;
+      }
+    }
+
+    @for $i from 2 through $multi-toggle-max-slots {
+      &:has(> label:nth-child(#{$i}) input:checked)::after {
+        inset-inline-start: calc(#{c.$toggle-thumb-gap} + #{$i - 1} * #{$_slot});
+      }
+    }
+
+    // ── Hover and Focus ──────────────────────────────────────────────────────
+    @include u.on-hover {
+      @include t.theme("background-color", "control-hover");
+    }
+
+    &:has(input:focus-visible) {
+      outline:         2px solid;
+      outline-offset:  2px;
+      @include t.theme("outline-color", "focus-ring");
+    }
+
+    // ── Sizes ────────────────────────────────────────────────────────────────
+    // Every dimension is in `em`, so the font size scales the whole control.
+    &.is-small   { font-size: c.$font-size-sm; }
+    &.is-medium  { font-size: c.$font-size-lg; }
+    &.is-large   { font-size: c.$font-size-xl; }
+
+    // ── Semantic Variants ────────────────────────────────────────────────────
+    @each $name, $_ in c.$semantic-colors {
+      &.is-#{$name}::after {
+        @include t.theme("background-color", "fill-#{$name}");
+      }
+    }
+
+    // ── Disabled ─────────────────────────────────────────────────────────────
+    &[disabled],
+    fieldset[disabled] & {
+      cursor:   not-allowed;
+      opacity:  0.7;
+
+      > label {
+        cursor:          not-allowed;
+        pointer-events:  none;
+      }
+    }
+  }
+}

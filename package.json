@@ -1,7 +1,7 @@
 {
     "name": "nuvio",
-    "version": "1.2.0",
-    "homepage": "https://nuvio.emontis.io/",
+    "version": "1.4.0",
+    "homepage": "https://patrickbergner.github.io/nuvio/",
     "author": {
         "name": "Emontis",
         "email": "contact@emontis.io",
@@ -20,6 +20,7 @@
         "responsive",
         "minimal",
         "lightweight",
+        "dark-mode",
         "easy",
         "bulma"
     ],
@@ -34,6 +35,7 @@
     "files": [
         "dist",
         "src",
+        "ideas",
         "LICENSE",
         "README.md"
     ],
@@ -58,5 +60,8 @@
         "dist-sizes": "node scripts/dist-sizes.js",
         "dist-sizes-json": "node scripts/dist-sizes.js --json",
         "prepublishOnly": "npm run build"
+    },
+    "allowScripts": {
+        "@parcel/watcher": false
     }
 }

@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Nuvio
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build
 
       # The demo installs Nuvio from ../.. (file:), so it is rebuilt against the
@@ -36,7 +36,7 @@ jobs:
       - name: Build the custom-bundle demo
         working-directory: demos/02-minimized-custom-bundle
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build
 
       - name: Assemble the site

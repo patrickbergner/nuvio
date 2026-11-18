@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#4a4a4a" />
     <title>nuvio</title>
     <link rel="stylesheet" href="../../dist/nuvio.css" />
-    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@1/font/lucide.css" />
     <link rel="icon" type="image/svg+xml" href="../icon.svg" />
     <style>
         .examplebox {
@@ -235,7 +235,7 @@
             <p class="block"><img src="../logo.svg" style="width: 100%; max-width: 25rem;" alt="nuvio Logo" /></p>
             <h1 class="title is-level-1">nuvio</h1>
             <p class="subtitle is-level-3">Nuvio – like “nuvola” (cloud), light foundation</p>
-            <p><span class="tag is-primary is-medium is-family-mono"><!-- §§_VERSION_§§ -->0.1.0</span></p>
+            <p><span class="tag is-primary is-medium is-family-mono"><!-- §§_VERSION_§§ -->main</span></p>
         </section>
 
         <section class="mt-7">
@@ -249,12 +249,94 @@
 
         <section class="mt-7">
             <h2 class="title is-level-2">Download and Usage</h2>
-            <p>Foo</p>
+            <p class="halfblock">Link a pre-built file from a CDN – <code>@<span><!-- §§_MAJOR_§§ -->1</span></code> follows the latest release of this major version:</p>
+            <pre class="block"><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nuvio@<span><!-- §§_MAJOR_§§ -->1</span>/dist/nuvio.min.css" /&gt;</code></pre>
+            <p class="block">For production, pin an exact version and add its <code>integrity</code> hash – the notes of every <a href="https://github.com/patrickbergner/nuvio/releases" target="_blank">release</a> list them, next to a zip of all 16 files to download.</p>
+            <p class="halfblock">Or install the package and import the stylesheet once, in your application’s entry point – the <a href="https://github.com/patrickbergner/nuvio#framework-integration" target="_blank">README</a> shows where for Vite, Next.js, Nuxt, Angular and SvelteKit:</p>
+            <pre class="block"><code>npm install nuvio</code></pre>
+            <pre class="block"><code>import 'nuvio/dist/nuvio.css'</code></pre>
+            <p class="halfblock">To change colors, typography, breakpoints or the set of components, compile Nuvio from its <a href="https://github.com/patrickbergner/nuvio#customization-with-sass" target="_blank">Sass sources</a> instead:</p>
+            <pre class="block"><code>@use "nuvio/src/config" with (
+  $semantic-color-excludes: ("bright", "dim"),
+);
+@use "nuvio/src/includes-full";</code></pre>
+            <p>Everything on this page works from Chrome and Edge 135, Firefox 147 and Safari 26.2 on.</p>
         </section>
 
         <section class="mt-7">
-            <h2 class="title is-level-2">Builds as Small as 19 KiB (Base Feature Set)</h2>
-            <p>Foo</p>
+            <h2 class="title is-level-2">Builds as Small as <span><!-- §§_SIZE_SMALLEST_§§ -->19</span> KiB (Base Feature Set)</h2>
+            <p class="halfblock">Nuvio comes as 16 pre-built files: two feature sets in four theme modes, each minified and unminified. The <strong>full</strong> set holds every component on this page. The <strong>base</strong> set keeps the layout, the 12-column grid, spacing, boxes, notifications and four semantic colors – enough structure for widgets and server-rendered pages.</p>
+            <p class="block">The theme mode decides how much of the color system ships: <code>auto</code> follows the system setting and can be overridden, <code>prefer</code> only follows it, <code>light</code> and <code>dark</code> carry one palette each.</p>
+            <table class="table is-fullwidth block">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Feature Set</th>
+                        <th>Theme Mode</th>
+                        <th class="is-aligned-end">Minified</th>
+                        <th class="is-aligned-end">Gzipped</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>nuvio.min.css</code></td>
+                        <td>Full</td>
+                        <td><code>auto</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_§§ -->202.0</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_§§ -->23.2</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-prefer.min.css</code></td>
+                        <td>Full</td>
+                        <td><code>prefer</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_PREFER_§§ -->195.0</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_PREFER_§§ -->23.0</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-light.min.css</code></td>
+                        <td>Full</td>
+                        <td><code>light</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_LIGHT_§§ -->191.6</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_LIGHT_§§ -->22.6</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-dark.min.css</code></td>
+                        <td>Full</td>
+                        <td><code>dark</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_DARK_§§ -->191.6</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_DARK_§§ -->22.6</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-base.min.css</code></td>
+                        <td>Base</td>
+                        <td><code>auto</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_BASE_§§ -->23.6</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_BASE_§§ -->4.0</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-base-prefer.min.css</code></td>
+                        <td>Base</td>
+                        <td><code>prefer</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_BASE_PREFER_§§ -->20.8</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_BASE_PREFER_§§ -->3.9</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-base-light.min.css</code></td>
+                        <td>Base</td>
+                        <td><code>light</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_BASE_LIGHT_§§ -->19.3</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_BASE_LIGHT_§§ -->3.7</span> KiB</td>
+                    </tr>
+                    <tr>
+                        <td><code>nuvio-base-dark.min.css</code></td>
+                        <td>Base</td>
+                        <td><code>dark</code></td>
+                        <td class="is-aligned-end"><span><!-- §§_SIZE_NUVIO_BASE_DARK_§§ -->19.3</span> KiB</td>
+                        <td class="is-aligned-end"><span><!-- §§_GZIP_NUVIO_BASE_DARK_§§ -->3.7</span> KiB</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Smaller still: compile only the modules you use, or strip whatever your pages don’t reference. The <a href="https://patrickbergner.github.io/nuvio/minimized-bundle/" target="_blank">minimized bundle demo</a> takes the second route with PurgeCSS and ships its whole stylesheet in <span><!-- §§_SIZE_BUNDLE_DEMO_§§ -->30.8</span> KiB, <span><!-- §§_GZIP_BUNDLE_DEMO_§§ -->5.6</span> KiB gzipped – its <a href="https://github.com/patrickbergner/nuvio/tree/main/demos/02-minimized-custom-bundle" target="_blank">build pipeline</a> is ready to copy.</p>
         </section>
 
         <section class="mt-7">
@@ -5939,7 +6021,7 @@ sass --watch src/main.scss dist/main.css</pre>
             </div>
 
             <!-- ── File ───────────────────────────────────── -->
-            <h3 class="title is-level-3 mb-4 mt-7">File Uploads – <code class="is-size-3">.file</code></h3>
+            <h3 class="title is-level-3 mb-4 mt-7" id="file">File Uploads – <code class="is-size-3">.file</code></h3>
 
             <p class="mb-2 mt-4">Basic</p>
             <div class="file mb-4">
@@ -6023,6 +6105,20 @@ sass --watch src/main.scss dist/main.css</pre>
                     <span class="file-name"></span>
                 </label>
             </div>
+
+            <p class="mb-2">A file input does not reveal the chosen filename to CSS, so <code>.has-name</code> is the one place where Nuvio expects a few lines of script. This page runs exactly these:</p>
+            <pre class="mb-4"><code>document.querySelectorAll('.file-input').forEach(input =&gt; {
+  input.addEventListener('change', () =&gt; {
+    const files = Array.from(input.files);
+    const fileEl = input.closest('.file-label').parentElement;
+    const nameEl = fileEl.querySelector('.file-name');
+    if (!files.length || !nameEl) return;
+    nameEl.textContent = files.length === 1
+      ? files[0].name
+      : `${files.length} files selected`;
+    fileEl.classList.remove('is-empty');
+  });
+});</code></pre>
 
             <p class="mb-2"><code>.is-centered</code> – centers the control in its container</p>
             <div class="box p-2 mb-4">
@@ -6160,15 +6256,18 @@ sass --watch src/main.scss dist/main.css</pre>
 
     <!-- One script, and it is not about any component's behavior: a file input
          will not reveal the picked file's name to CSS, so the .file.has-name
-         label has to be filled in from script. -->
+         label has to be filled in from script. The File Uploads section shows
+         this same code – keep the two in step. -->
     <script>
         document.querySelectorAll('.file-input').forEach(input => {
-            input.addEventListener('change', function () {
+            input.addEventListener('change', () => {
                 const files = Array.from(input.files);
                 const fileEl = input.closest('.file-label').parentElement;
                 const nameEl = fileEl.querySelector('.file-name');
-                if ((files.length === 0) || (!nameEl)) return;
-                nameEl.textContent = (files.length === 1) ? files[0].name : files.length + ' files selected';
+                if (!files.length || !nameEl) return;
+                nameEl.textContent = files.length === 1
+                    ? files[0].name
+                    : `${files.length} files selected`;
                 fileEl.classList.remove('is-empty');
             });
         });

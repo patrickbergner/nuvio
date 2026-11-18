@@ -77,7 +77,7 @@ jobs:
           fi
 
       - name: Install
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       # The release re-proves everything rather than trusting that CI passed on
       # the same commit.
@@ -109,7 +109,7 @@ jobs:
           npm pack --pack-destination artifacts
           tarball="artifacts/$NAME-$VERSION.tgz"
           tar -tzf "$tarball" | sort >contents.txt
-          for f in package.json README.md LICENSE dist/nuvio.css dist/nuvio.min.css src/main-full-auto.scss; do
+          for f in package.json README.md LICENSE dist/nuvio.css dist/nuvio.min.css src/main-full-auto.scss ideas/sidebar-nav/_sidebar-nav.scss; do
             if ! grep -qx "package/$f" contents.txt; then
               echo "error: $tarball lacks $f" >&2
               exit 1

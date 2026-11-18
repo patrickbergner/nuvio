@@ -52,7 +52,7 @@ would install the published package instead:
 // package.json
 {
     "dependencies": {
-        "nuvio": "^0.0.3"
+        "nuvio": "^1"
     }
 }
 ```
